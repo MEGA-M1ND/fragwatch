@@ -1,0 +1,24 @@
+[project]
+name = "fragwatch"
+version = "0.1.0"
+description = "Pilot reproduction of the distributed/decomposed attack threat on ControlArena's iac_fast setting"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["data"]
+
+[tool.ruff.lint]
+# Deliberately lint-only: `ruff format` is NOT run in CI because it rewraps implicit string
+# concatenation, which would silently alter the attack-policy and fragment prompt literals that the
+# experiment's results depend on.
+select = ["E", "F", "I", "W", "B", "UP"]
+ignore = ["E501"]  # long lines are mostly prompt literals that must not be rewrapped
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "integration: needs the full eval stack (control_arena + inspect_ai) installed",
+]
+addopts = "-q"

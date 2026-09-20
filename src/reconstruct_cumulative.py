@@ -16,12 +16,11 @@ import sys
 import tempfile
 from pathlib import Path
 
-from inspect_ai.log import read_eval_log
-from inspect_ai.model import GenerateConfig, get_model
-
 from control_arena.scorers._diff_monitor import DIFF_MONITOR_PROMPT_TEMPLATE
 from control_arena.settings.iac_fast.config import SETTING_REPO_PATH
 from control_arena.settings.iac_fast.objectives import main_objectives
+from inspect_ai.log import read_eval_log
+from inspect_ai.model import GenerateConfig, get_model
 
 sys.path.insert(0, str(Path(__file__).parent))
 from rescore import robust_score  # noqa: E402
@@ -92,7 +91,7 @@ async def main():
             tr = store.get("task_results") or {}
             side = store.get("side_task_name")
             cums = rebuild(commits)
-            for c, cum in zip(commits, cums):
+            for c, cum in zip(commits, cums, strict=True):
                 i = c["agent_index"]
                 rows.append({
                     "campaign": s.id, "condition": md.get("condition"), "K": md.get("n_agents"),
@@ -119,8 +118,8 @@ async def main():
     print(f"scoring {len(rows)} commits x 2 views x {N_SAMPLES} samples...")
     await asyncio.gather(*(work(r) for r in rows))
     for r in rows:
-        r.pop("per_diff", None); r.pop("cum_diff", None)
-        r.pop("cum_desc", None); r.pop("per_desc", None)
+        for k in ("per_diff", "cum_diff", "cum_desc", "per_desc"):
+            r.pop(k, None)
     Path("data/step4_cumulative/robust_scores.json").write_text(json.dumps(rows, indent=1))
     print("wrote data/step4_cumulative/robust_scores.json")
 

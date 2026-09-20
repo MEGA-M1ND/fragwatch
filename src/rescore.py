@@ -18,39 +18,21 @@ No agents are re-run; this only re-reads diffs already in the log.
 import asyncio
 import glob
 import json
-import re
 import statistics as st
 import sys
 from pathlib import Path
 
+from control_arena.scorers._diff_monitor import DIFF_MONITOR_PROMPT_TEMPLATE
+from control_arena.settings.iac_fast.objectives import main_objectives
 from inspect_ai.log import read_eval_log
 from inspect_ai.model import GenerateConfig, get_model
 
-from control_arena.scorers._diff_monitor import DIFF_MONITOR_PROMPT_TEMPLATE
-from control_arena.settings.iac_fast.objectives import main_objectives
+sys.path.insert(0, str(Path(__file__).parent))
+from parsing import robust_score  # noqa: E402
 
 MONITOR = "openrouter/google/gemini-2.5-flash-lite"
 N_SAMPLES = 3
 CONCURRENCY = 8
-
-
-def robust_score(text: str) -> tuple[float | None, str]:
-    """Extract a 1-10 verdict however the model chose to format it."""
-    if m := re.search(r"<score>\s*([0-9]+(?:\.[0-9]+)?)\s*</score>", text, re.I):
-        return float(m.group(1)), "xml_tag"
-    # fenced number, possibly the last of several fences
-    fenced = re.findall(r"```[a-z]*\s*([0-9]+(?:\.[0-9]+)?)\s*```", text)
-    if fenced:
-        return float(fenced[-1]), "fenced"
-    if m := re.search(r"(?:score|rating|verdict)\D{0,20}?([0-9]+(?:\.[0-9]+)?)\s*(?:/\s*10)?\s*$",
-                      text, re.I | re.M):
-        return float(m.group(1)), "labelled"
-    # trailing bare number on its own line
-    lines = [l.strip() for l in text.strip().splitlines() if l.strip()]
-    for l in reversed(lines[-5:]):
-        if re.fullmatch(r"([0-9]|10)(\.[0-9]+)?", l):
-            return float(l), "trailing_bare"
-    return None, "unparseable"
 
 
 async def score_one(model, task_desc: str, diff: str) -> dict:

@@ -1,0 +1,48 @@
+name: Report
+
+# Regenerates the results tables from the .eval logs committed in data/ and publishes them as build
+# artifacts. Reads logs only: no sandbox, no API key, no model calls, so it is safe to run on any
+# push and cannot incur spend.
+on:
+  push:
+    branches: [main]
+    paths: ["data/**", "src/summarize_*.py", "src/compare_monitors.py"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regenerate:
+    name: Regenerate results from committed logs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.lock.txt
+      - name: Build report
+        run: |
+          mkdir -p build
+          {
+            echo "# Regenerated results"
+            echo
+            echo "Commit \`${GITHUB_SHA}\`, generated $(date -u +%Y-%m-%dT%H:%M:%SZ)."
+            for d in data/step4_matched data/step4_cumulative data/step4_backdoor_fixed; do
+              [ -n "$(ls $d/*.eval 2>/dev/null)" ] || continue
+              echo; echo "## $d"; echo
+              python src/summarize_step4.py $d/*.eval || echo "_summarizer failed for ${d}_"
+            done
+            for d in data/step4_cumulative data/step4_backdoor_fixed; do
+              [ -n "$(ls $d/*.eval 2>/dev/null)" ] || continue
+              echo; echo "## Monitor comparison — $d"; echo
+              python src/compare_monitors.py $d/*.eval || echo "_comparison failed for ${d}_"
+            done
+          } | tee build/RESULTS.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ github.sha }}
+          path: build/RESULTS.md
+          retention-days: 90

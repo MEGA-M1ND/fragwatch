@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-unit:
+    name: Lint + hermetic unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      # Deliberately minimal: these tests must not need control_arena/inspect_ai, so a broken
+      # lockfile or a slow install can never mask a logic regression.
+      - name: Install tooling
+        run: pip install ruff==0.15.8 pytest==8.3.4
+      - name: Lint
+        run: ruff check .
+      - name: Unit tests (no eval stack, no network)
+        run: pytest -m "not integration"
+
+  integration:
+    name: Eval stack imports + matrix builds
+    runs-on: ubuntu-latest
+    needs: lint-and-unit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install pinned eval stack
+        run: |
+          pip install -r requirements.lock.txt
+          pip install pytest==8.3.4
+      - name: Integration tests (no Docker, no model calls)
+        run: pytest -m integration

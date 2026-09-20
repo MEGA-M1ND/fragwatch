@@ -1,9 +1,12 @@
-.venv/
-__pycache__/
-*.pyc
-.env
-logs/
+
 # Raw trajectories (.eval) are committed while small (tens of KB each);
 # add a per-directory ignore if a run directory grows large.
+*.pyc
+.env
 .ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+.venv/
+__pycache__/
 data/step4_smoke/
+logs/

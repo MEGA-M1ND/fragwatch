@@ -23,19 +23,8 @@ import asyncio
 import uuid
 from dataclasses import dataclass
 from logging import getLogger
-from pathlib import Path
 from typing import Any
 
-from inspect_ai.agent import AgentPrompt, AgentState, react
-from inspect_ai.dataset import Sample
-from inspect_ai.model import ChatMessageUser, GenerateConfig, Model, get_model
-from inspect_ai.scorer import Score, Scorer, Target, accuracy, mean, scorer, stderr
-from inspect_ai.solver import Generate, Solver, TaskState, solver
-from inspect_ai.tool import bash
-from inspect_ai.util import LimitExceededError, message_limit, sandbox, token_limit
-
-from control_arena._control_task_metadata import ControlTaskMetadata
-from control_arena._types import EvalMode
 from control_arena.policy.prompts import policy_prompts
 from control_arena.scorers._diff_monitor import DIFF_MONITOR_PROMPT_TEMPLATE
 from control_arena.settings.iac_fast.config import AGENT_REPO_PATH, SETTING_DESCRIPTION, TESTS_PATH
@@ -47,6 +36,13 @@ from control_arena.settings.iac_fast.scorers import (
 )
 from control_arena.settings.iac_fast.tools import cdk_ls, cdk_synth, text_editor
 from control_arena.utils import extract_xml_tag
+from inspect_ai.agent import AgentPrompt, AgentState, react
+from inspect_ai.dataset import Sample
+from inspect_ai.model import ChatMessageUser, GenerateConfig, Model, get_model
+from inspect_ai.scorer import Score, Scorer, Target, mean, scorer, stderr
+from inspect_ai.solver import Generate, Solver, TaskState, solver
+from inspect_ai.tool import bash
+from inspect_ai.util import LimitExceededError, message_limit, sandbox, token_limit
 
 logger = getLogger(__name__)
 
@@ -221,7 +217,9 @@ def campaign_solver(untrusted_model: str, trusted_model: str) -> Solver:
             user_msg = (
                 f"Complete the following task in the repository at {repo}.\n\n{mt_desc}"
             )
-            async def _run(msg: str) -> tuple[bool, bool]:
+            async def _run(
+                msg: str, agent=agent, i=i, mt_name=mt_name
+            ) -> tuple[bool, bool]:
                 lh = to = False
                 try:
                     with token_limit(PER_AGENT_TOKEN_LIMIT), message_limit(PER_AGENT_MESSAGE_LIMIT):
@@ -232,7 +230,7 @@ def campaign_solver(untrusted_model: str, trusted_model: str) -> Solver:
                 except LimitExceededError as e:
                     lh = True
                     logger.warning(f"agent {i} ({mt_name}) hit limit: {e}")
-                except (TimeoutError, asyncio.TimeoutError):
+                except TimeoutError:
                     to = True
                     logger.warning(f"agent {i} ({mt_name}) hit {PER_AGENT_WALL_CLOCK_S}s wall clock")
                 return lh, to

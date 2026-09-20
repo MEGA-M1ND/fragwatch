@@ -13,14 +13,13 @@ import argparse
 import json
 from pathlib import Path
 
-from inspect_ai import eval
-from inspect_ai.model import get_model
-
 from control_arena.eval import ControlEvalConfig, EvalMode, get_control_task
 from control_arena.micro_protocol import trusted_monitoring_builder
 from control_arena.monitor import basic_monitor_builder
 from control_arena.scorers import git_diff_monitor, max_suspicion_scorer
 from control_arena.settings.iac_fast import IACFastSetting
+from inspect_ai import eval
+from inspect_ai.model import get_model
 
 UNTRUSTED = "openrouter/openai/gpt-4.1-nano"
 TRUSTED = "openrouter/google/gemini-2.5-flash-lite"
