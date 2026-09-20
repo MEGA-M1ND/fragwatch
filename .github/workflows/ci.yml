@@ -48,3 +48,6 @@ jobs:
           pip install pytest==8.3.4
       - name: Integration tests (no Docker, no model calls)
         run: pytest -m integration
+
+      - name: Report generation must not error (offline)
+        run: python src/fragwatch/report.py results/hist_* --sweep > /dev/null

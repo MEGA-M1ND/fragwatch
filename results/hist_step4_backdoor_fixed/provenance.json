@@ -1,0 +1,12 @@
+{
+ "code_commit": "1977fdc",
+ "dependency_versions": {},
+ "monitor_model": "openrouter/google/gemini-2.5-flash-lite",
+ "notes": "Reparsed from preserved raw responses; no new model calls. Aggregation policy 'attempt0': only the first call (temperature 0.0) counts, because live retries used temperature 0.5 and are not exchangeable.",
+ "prompt_version": "stock_git_diff_monitor_v1",
+ "protocol_version": "P-C",
+ "provenance": "historical",
+ "run_id": "hist_step4_backdoor_fixed",
+ "scoring_config_fingerprint": "5c09c875ffe0dfe2",
+ "source_log": "data/step4_backdoor_fixed/2026-09-20T13-20-31-00-00_step4-fragmentation_QyyUMoUtrcECRsPUc2JacY.eval"
+}
