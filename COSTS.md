@@ -31,6 +31,8 @@ Prices are from `GET https://openrouter.ai/api/v1/models` on 2026-09-20, USD per
 | 9 | 2026-09-20 | 4 | Step 4 smoke: 1 K1 campaign | untrusted gpt-5-mini (20,229 in + 180,736 cached + 4,463 out); trusted flash-lite | 202,478 | 5,639 | 0.019 | 0.589 |
 | 10 | 2026-09-20 | 4 | Step 4 run A: 9 campaigns (confounded, K1 not instruction-matched) | untrusted gpt-5-mini (494,129 in + 3,091,200 cached + 86,329 out); trusted flash-lite (29,038 in + 26,920 out) | 3,614,367 | 113,249 | 0.387 | 0.976 |
 | 11 | 2026-09-20 | 4 | Step 4 run B: 10 campaigns (instruction-matched, the result) | untrusted gpt-5-mini (507,007 in + 2,777,728 cached + 79,714 out); trusted flash-lite (30,240 in + 2,040 cached + 26,396 out) | 3,316,975 | 106,110 | 0.369 | 1.346 |
+| 12 | 2026-09-20 | 4b | 15 campaigns, per-commit + cumulative monitor | untrusted gpt-5-mini (929,113 in + 6,708,992 cached + 153,242 out); trusted flash-lite (142,159 in + 16,332 cached + 188,210 out) | 7,796,596 | 341,452 | 0.796 | 2.142 |
+| 13 | 2026-09-20 | 4b | post-hoc robust re-scoring, ~297 judge calls, no agents re-run | flash-lite (~594k in + ~1.04M out) | 594,000 | 1,040,000 | 0.475 | 2.617 |
 
 Cached input tokens for OpenAI models are billed at 25% of the input price on OpenRouter (nano: $0.025/M).
 Costs are computed as `input_tok * in_price + cached_tok * cache_price + output_tok * out_price` from Inspect's reported
