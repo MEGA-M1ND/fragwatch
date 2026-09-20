@@ -6,3 +6,4 @@ logs/
 # Raw trajectories (.eval) are committed while small (tens of KB each);
 # add a per-directory ignore if a run directory grows large.
 .ipynb_checkpoints/
+data/step4_smoke/
