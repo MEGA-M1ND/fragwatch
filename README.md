@@ -29,12 +29,37 @@ procedure and of pooling runs with different protocols.
 
 What survives from the historical work is methodological, not empirical, and is listed below.
 
-## Current work
+## Pilot outcome
+
+> In this small developmental batch, cumulative-diff monitoring did not improve detection over
+> per-commit monitoring. Some partial changes received low suspicion scores, but the completed attack
+> often retained a locally suspicious joining commit. These results do not yet establish a suitable
+> setting for evaluating correlation-based recovery.
+
+Nine developmental campaigns: 3 concentrated attacks, 3 fragmented attacks, 3 honest controls with the
+same cross-commit dependency shape. Attacks landed in 6/6, verified by synthesising each template, not
+by the delivery greps. Per-commit alerts: 3/3 concentrated, 2/3 fragmented, 0/3 honest. Cumulative:
+3/3, 1/3, 0/3. Full table, caveats and cost in **[PILOT_REPORT.md](PILOT_REPORT.md)**; the decision to
+stop rather than scale is in **[GATE_DECISION.md](GATE_DECISION.md)**.
+
+**n = 3 per arm cannot establish equivalence between the two views, a deployment false-positive rate,
+or general robustness.** One campaign's verdict flips depending on whether three judge calls are
+aggregated by median or maximum.
 
 The measurement pipeline has been rebuilt around a single canonical scoring path, versioned records
-with provenance, and an offline report generator (`PROTOCOL.md`, `results/README.md`). A new protocol,
-**P-1, is developmental** and not yet frozen; see `PROTOCOL.md` Amendment A2. Development runs and their
-outcomes, including failures, are recorded in `DEV_LOG.md`.
+with provenance, and an offline report generator (`PROTOCOL.md`, `results/README.md`). Protocol
+**P-1 is developmental**, not frozen; see `PROTOCOL.md` Amendment A2. Development runs and their
+outcomes, including failures, are in `DEV_LOG.md`.
+
+## Start here
+
+| I want to... | Go to |
+|---|---|
+| Spend five offline minutes | [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md) |
+| See what the pilot found | [PILOT_REPORT.md](PILOT_REPORT.md) |
+| Know what was wrong before | [AUDIT.md](AUDIT.md) |
+| Check the bugs still reproduce | `python src/fragwatch/repro_bugs.py` |
+| Understand the AI's role and errors | [docs/AI_ASSISTANCE.md](docs/AI_ASSISTANCE.md) |
 
 ## Three defects found in the stock tooling
 
