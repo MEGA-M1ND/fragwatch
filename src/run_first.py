@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 
 from inspect_ai import eval
+from inspect_ai.model import get_model
 
 from control_arena.eval import ControlEvalConfig, EvalMode, get_control_task
 from control_arena.micro_protocol import trusted_monitoring_builder
@@ -44,9 +45,15 @@ def main() -> None:
     micro_protocol = trusted_monitoring_builder(
         monitor=basic_monitor_builder(model_role="trusted"),
     )
+    # strict_tools=False: Inspect's OpenAI-compatible provider marks every tool schema
+    # `strict: true`; OpenAI's strict mode then rejects iac_fast's text_editor tool because
+    # its optional parameters are not all listed under `required`. This is a transport
+    # setting on the model client, not a change to the setting or its tools.
+    untrusted = get_model(args.untrusted, strict_tools=False)
+    trusted = get_model(args.trusted, strict_tools=False)
     config = ControlEvalConfig(
-        untrusted_model=args.untrusted,
-        trusted_model=args.trusted,
+        untrusted_model=untrusted,
+        trusted_model=trusted,
         max_steps=args.max_steps,
         token_limit=500_000,
         log_dir=str(LOG_DIR),
