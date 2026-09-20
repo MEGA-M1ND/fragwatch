@@ -44,9 +44,17 @@ All succeeded.
 | `ANTHROPIC_API_KEY` | **not set** (`ANTHROPIC_BASE_URL` is set but the endpoint returns 401 unauthenticated) | Direct Anthropic models cannot be used from this container. |
 | `OPENAI_API_KEY` | not set | Direct OpenAI models cannot be used. |
 | Docker client | present (Engine 29.3.1 CLI) | — |
-| Docker daemon | **not running** (`/var/run/docker.sock` missing) | Any ControlArena setting whose sandbox is Docker cannot run here. See ENVIRONMENT_AUDIT.md for which settings that is. |
+| Docker daemon | not running at session start (`/var/run/docker.sock` missing), **started manually** with `nohup dockerd --storage-driver=vfs &` (we are root; `dockerd`, `containerd`, `runc` are present). After start: `docker run --rm alpine:3.20 echo ok` pulls through the proxy and runs; `docker compose version` reports v5.1.1. | Docker-sandboxed settings can run here. The daemon is per-session and must be restarted in a fresh container. Storage driver is `vfs` (no overlayfs), so image builds are slow and disk-hungry. |
 
 ## What broke
 
-Nothing broke during install. The two blockers above (no Docker daemon, no Anthropic key) are
-environmental and affect Step 3 onward, not Step 1.
+Nothing broke during install. Docker had to be started by hand (see table). No Anthropic or
+OpenAI key is present, so models must be routed through OpenRouter (`openrouter/...` model
+strings in Inspect) for Step 3 onward.
+
+## Restarting Docker in a fresh session
+
+```bash
+nohup dockerd --storage-driver=vfs > /tmp/dockerd.log 2>&1 &
+sleep 8 && docker info | grep 'Server Version'
+```
