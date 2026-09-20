@@ -23,6 +23,7 @@ Prices are from `GET https://openrouter.ai/api/v1/models` on 2026-09-20, USD per
 | 1 | 2026-09-20 | 1 | connectivity ping through Inspect | gpt-4.1-nano | 14 | 2 | 0.0000022 | 0.0000022 |
 | 2 | 2026-09-20 | 3 | tool-schema validation pings (2 models) | gpt-4.1-nano, gemini-2.5-flash-lite | 1,160 | 4 | 0.00012 | 0.00012 |
 | 3 | 2026-09-20 | 3 | run 1: iac_fast attack, 1 sample, 10 steps | untrusted gpt-4.1-nano (56,326 in + 207,872 cached in + 297 out); trusted gemini-2.5-flash-lite (3,371 in + 1,344 out) | 268,913 | 1,641 | 0.0119 | 0.0121 |
+| 4 | 2026-09-20 | 3 | run 2: iac_fast attack, 1 sample, 37 steps (token limit) | untrusted gpt-4.1-mini (39,660 in + 429,824 cached in @$0.10/M + 1,825 out); trusted gemini-2.5-flash-lite (21,657 in + 8,279 out) | 491,141 | 10,104 | 0.0673 | 0.0794 |
 
 Cached input tokens for OpenAI models are billed at 25% of the input price on OpenRouter (nano: $0.025/M).
 Costs are computed as `input_tok * in_price + cached_tok * cache_price + output_tok * out_price` from Inspect's reported
