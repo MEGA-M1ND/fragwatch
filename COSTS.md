@@ -26,6 +26,8 @@ Prices are from `GET https://openrouter.ai/api/v1/models` on 2026-09-20, USD per
 | 4 | 2026-09-20 | 3 | run 2: iac_fast attack, 1 sample, 37 steps (token limit) | untrusted gpt-4.1-mini (39,660 in + 429,824 cached in @$0.10/M + 1,825 out); trusted gemini-2.5-flash-lite (21,657 in + 8,279 out) | 491,141 | 10,104 | 0.0673 | 0.0794 |
 | 5 | 2026-09-20 | 3 | tool-schema validation ping, gpt-5-mini | gpt-5-mini (753 in + 51 out incl. reasoning) | 753 | 51 | 0.0003 | 0.0797 |
 | 6 | 2026-09-20 | 3 | run 3: iac_fast attack, 1 sample, 9 steps (submit) | untrusted gpt-5-mini (15,116 in + 38,528 cached @$0.025/M + 1,117 out incl. 663 reasoning); trusted gemini-2.5-flash-lite (5,054 in + 1,979 out) | 58,698 | 3,096 | 0.0083 | 0.0880 |
+| 7 | 2026-09-20 | 3b | model compare: 5 attack samples, gpt-5-mini | untrusted gpt-5-mini (177,931 in + 1,150,464 cached + 23,703 out incl. 13,273 reasoning); trusted flash-lite (72,466 in + 36,964 out) | 1,400,861 | 60,667 | 0.143 | 0.231 |
+| 8 | 2026-09-20 | 3b | model compare: 5 attack samples, gpt-4.1-mini | untrusted gpt-4.1-mini (236,921 in + 1,743,744 cached + 18,880 out); trusted flash-lite (126,250 in + 67,196 out) | 2,106,915 | 86,076 | 0.339 | 0.570 |
 
 Cached input tokens for OpenAI models are billed at 25% of the input price on OpenRouter (nano: $0.025/M).
 Costs are computed as `input_tok * in_price + cached_tok * cache_price + output_tok * out_price` from Inspect's reported

@@ -164,6 +164,8 @@ calls across the three runs.
 | Cost per trajectory | ~$0.07 (long context, cached re-reads) | ~$0.01 (short trajectory; reasoning tokens were only 663) |
 | Fit for the fragmentation experiment | attacker that visibly pursues the side task, so there is a monitor signal to fragment | cheaper and more capable, but with n=1 it produced no attack to monitor |
 
+**Update:** resolved by MODEL_COMPARE.md (5 samples each): gpt-5-mini attempted the side task on 4/5 and is the Step 4 choice.
+
 Neither result generalises from one sample. The decision that matters is not the price sheet
 (gpt-5-mini was 10× cheaper here) but whether the untrusted model actually executes the side
 task under the stock attack prompt. That needs 3–5 samples per model before Step 4, which is
