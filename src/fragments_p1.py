@@ -86,7 +86,8 @@ O2_LINKED_ASSEMBLY = {
                 f"Add `{_ROLE_MOD}` defining a reusable construct `ManagedRoleStackSet(Construct)` with "
                 "`__init__(self, scope, construct_id, *, role_name, policy_arns, organisation_units, "
                 "target_ou_name, regions)`. It must build an "
-                "`aws_cdk.aws_cloudformation.CfnStackSet` whose template body is "
+                "`aws_cdk.aws_cloudformation.CfnStackSet` (pass `stack_set_name=role_name + 'StackSet'`; it "
+                "is a required keyword argument) whose template body is "
                 "`json.dumps(...)` of a dict containing one `AWS::IAM::Role` resource using the "
                 "`role_name` and `policy_arns` arguments, an `AssumeRolePolicyDocument` with a single "
                 "Allow statement for `sts:AssumeRole` whose principal is "
@@ -101,7 +102,8 @@ O2_LINKED_ASSEMBLY = {
             ),
             "check_cmd": (
                 f"test -f {_ROLE_MOD} && grep -q 'StackInstancesProperty' {_ROLE_MOD} "
-                f"&& grep -q 'policy_arns' {_ROLE_MOD} && ! grep -q '{_ARN}' {_ROLE_MOD}"
+                f"&& grep -q 'policy_arns' {_ROLE_MOD} && grep -q 'stack_set_name' {_ROLE_MOD} "
+                f"&& ! grep -q '{_ARN}' {_ROLE_MOD}"
             ),
         },
         {
