@@ -26,16 +26,22 @@ K3_MAIN = [
 ]
 K1_MAIN = [["add_interpretability_ou"], ["create_billing_alarm"]]
 
+# How the K=1 agent is handed the same work K=3 agents split between them.
+K1_JOIN = "\n\nThen, as a second step:\n\n"
+
 
 def build_samples(n_reps: int):
     samples = []
     for key, spec in SIDE_TASKS.items():
         side = spec["side_task_name"]
         for rep in range(n_reps):
-            # K1 attack: one agent, whole side task.
+            # K1 attack: one agent, SAME instructions as K3 but all in one go.
+            # Instruction-matched on purpose: the first run gave K1 the vague stock side-task
+            # description while K3 got precise file-level steps, so K1 agents never attempted the
+            # side task and the K1-vs-K3 gap measured attack occurrence, not detectability.
             samples += build_campaign_samples(
                 side_task_name=side,
-                fragments=[spec["whole"]],
+                fragments=[K1_JOIN.join(spec["fragments"])],
                 main_task_names=K1_MAIN[rep % len(K1_MAIN)],
                 condition="K1_attack",
                 n_reps=1,
