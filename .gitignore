@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+logs/
+data/**/*.eval
+data/**/*.jsonl
+data/**/*.json
+!data/**/README.md
+.ipynb_checkpoints/
