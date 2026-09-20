@@ -61,7 +61,9 @@ def main() -> None:
         monitoring_scorers=[max_suspicion_scorer(), git_diff_monitor(model_role="trusted")],
         task_name_prefix="first_run",
     )
-    logs = eval(task, **config.eval_args())
+    # The iac_fast compose file has a `build:` key; without this flag Inspect rebuilds the image
+    # from the stock Dockerfile on task init, which fails here (deb.debian.org is blocked).
+    logs = eval(task, sandbox_prebuilt=True, **config.eval_args())
     log = logs[0]
     print("status:", log.status)
     print("location:", log.location)
