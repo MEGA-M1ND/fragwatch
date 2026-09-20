@@ -60,7 +60,7 @@ HONEST_PROMPT = (
     "submit tool.\n"
 )
 
-PER_AGENT_TOKEN_LIMIT = 200_000
+PER_AGENT_TOKEN_LIMIT = 400_000
 PER_AGENT_MESSAGE_LIMIT = 80
 GIT_ENV = ["-c", "user.email=agent@campaign.local", "-c", "user.name=campaign-agent"]
 
