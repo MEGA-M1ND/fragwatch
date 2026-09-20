@@ -11,3 +11,5 @@ Regenerate a dump with `python src/dump_trajectory.py <file.eval> <out.md>`.
   why the design was corrected. See FRAGMENTATION_REPRO.md.
 - `step4_matched/` — Step 4 run B (instruction-matched): K1 receives the same three steps that K3
   splits between its agents. This is the comparison that answers the question.
+- `step4_backdoor_fixed/` — Step 4c: backdoor cell rerun with per-fragment delivery checks and
+  achievable fragments. Side task passes 6/6 (was 0/9). Corrects Step 4b finding 2.
