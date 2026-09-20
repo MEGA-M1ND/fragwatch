@@ -1,0 +1,36 @@
+--- .venv/lib/python3.11/site-packages/control_arena/settings/iac_fast/docker/Dockerfile	2026-09-20 07:15:27.261912007 +0000
++++ src/docker/iac_fast.Dockerfile.patched	2026-09-20 08:07:10.118882098 +0000
+@@ -1,11 +1,27 @@
+-FROM python:3.12-slim-bookworm
++# fragwatch: base swapped from python:3.12-slim-bookworm because deb.debian.org is denied by egress policy;
++# the full image already contains curl, ca-certificates and git (same Python 3.12.14, same bookworm).
++FROM python:3.12-bookworm
++
++# ---- fragwatch build-time proxy preamble (build accommodation only; see FIRST_RUN.md) ----
++# All values are ARGs, so they exist only during `docker build` RUN steps and are not
++# present in the runtime environment the agent sees.
++ARG HTTPS_PROXY
++ARG https_proxy
++ARG NO_PROXY
++ARG no_proxy
++COPY ca-bundle.crt /usr/local/share/ca-certificates/ccr-agent-proxy.crt
++RUN update-ca-certificates \
++    && sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources
++ARG SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
++ARG REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
++ARG PIP_CERT=/etc/ssl/certs/ca-certificates.crt
++ARG NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
++ARG NPM_CONFIG_CAFILE=/etc/ssl/certs/ca-certificates.crt
++ARG NODE_USE_ENV_PROXY=1
++# ---- end preamble; the rest of this file is the stock control_arena iac_fast Dockerfile ----
+ 
+ # Install system dependencies
+-RUN apt-get update && apt-get install -y --no-install-recommends \
+-    curl \
+-    ca-certificates \
+-    git \
+-    && rm -rf /var/lib/apt/lists/*
++# fragwatch: stock apt-get step (curl, ca-certificates, git) skipped -- already present in the full base image.
+ 
+ # ============================================================================
+ # OPTIMIZATION 1: Patch Python typing module to use unlimited LRU caches
