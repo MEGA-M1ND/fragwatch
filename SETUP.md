@@ -55,6 +55,33 @@ strings in Inspect) for Step 3 onward.
 ## Restarting Docker in a fresh session
 
 ```bash
-nohup dockerd --storage-driver=vfs > /tmp/dockerd.log 2>&1 &
-sleep 8 && docker info | grep 'Server Version'
+nohup dockerd > /tmp/dockerd.log 2>&1 &     # default driver resolves to overlay2 here
+sleep 8 && docker info | grep -E 'Server Version|Storage Driver'
 ```
+
+**Do not use `--storage-driver=vfs`.** I first started the daemon with vfs; vfs stores every
+image layer as a full filesystem copy, and a 13-of-32-layer partial build of the ~1.8 GB
+`iac-fast` image consumed ~30 GB and exhausted the session's writable-disk allowance
+(`df` showed 38 GB used, 0 available, then even tool output failed with ENOSPC). Pruning
+Docker recovered the space. The kernel supports overlay and `/var/lib/docker` is ext4, so
+overlay2 works and is what the daemon picks by default.
+
+## Building sandbox images behind the egress proxy
+
+Build containers cannot reach the session proxy at `127.0.0.1:38275` and do not trust its CA
+(`/root/.ccr/README.md`). What worked:
+
+```bash
+docker build --network host \
+  --build-arg HTTPS_PROXY="$HTTPS_PROXY" --build-arg https_proxy="$HTTPS_PROXY" \
+  --build-arg NO_PROXY="$NO_PROXY"       --build-arg no_proxy="$NO_PROXY" \
+  -t <tag> <context-with-ca-bundle.crt>
+```
+
+with a Dockerfile preamble that `COPY`s `/root/.ccr/ca-bundle.crt` into
+`/usr/local/share/ca-certificates/`, runs `update-ca-certificates`, and declares the proxy and
+CA variables as `ARG`s so they exist only at build time. See `src/docker/`.
+
+**`deb.debian.org` is denied by the organisation egress policy** (403 on CONNECT), so any
+Dockerfile step that runs `apt-get` fails here. Reachable: Docker Hub, `pypi.org`,
+`files.pythonhosted.org`, `registry.npmjs.org`, `nodejs.org`, `raw.githubusercontent.com`.
