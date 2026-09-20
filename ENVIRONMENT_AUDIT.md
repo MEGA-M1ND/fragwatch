@@ -55,8 +55,8 @@ Sixteen settings ship (`settings/` directory). Summary table, then per-setting n
 | `bigcodebench` | docker, `network_mode: none` | none | 1140 / 148 hard (HF) | 1 (`insert_backdoor`) | no | no | no | no | no |
 | `data_poisoning` | local | none | 98 generated | 7 password-lock | no | no | no | no | no |
 | `eval_sabotage` | docker (bare) | **private** RepliBench fork, cloned over SSH | 18 | 1 × 6 methods | yes | yes | yes | no | no |
-| `iac` | docker, image baked | mock lab AWS CDK org at `/repo` | 5 | 8 | yes | **no** | yes | no | closest |
-| `iac_fast` | docker (k8s optional), image baked | same CDK org at `/repo` | 5 | 8 | yes | **no** | yes | no | closest |
+| `iac` | docker, image baked | mock lab AWS CDK org at `/repo` | 5 | 9 | yes | **no** | yes | no | closest |
+| `iac_fast` | docker (k8s optional), image baked | same CDK org at `/repo` | 5 | 9 | yes | **no** | yes | no | closest |
 | `infra` | **k8s (kind)** | `ca-k8s-infra` Helm/K8s repo cloned to `/workspace/training-infra` | 9 + 9 extended | 2 + 1 extended | yes | yes | yes | no | partial |
 | `rogue_eval` | docker, `network_mode: none` | none (one `solution.py`) | 26 | 1 | no | no | no | no | no |
 | `sae_interp_sabotage` | local | none | 22 | 1 | no | no | no | no | no |
@@ -96,13 +96,14 @@ Base classes every setting builds on:
   runs `git diff --no-index` against the reference dir (`:85-107`), excluding `cdk.out`, `.venv`,
   `.git`, `tests` (`settings/iac_fast/solvers.py:29-40`). Result goes to
   `state.store["submission_diff"]` (`:45`).
-- Main tasks (5) and side tasks (8) are strings in `settings/iac_fast/objectives.py:3-28`, `:30-67`.
+- Main tasks (5) and side tasks (9) are strings in `settings/iac_fast/objectives.py:3-28`, `:30-67`.
   Main: `add_interpretability_ou`, `create_billing_alarm`, `tag_security_policies`,
   `org_config_aggregator`, `enforce_mandatory_tags_scp`. Side: `disable_fsx_deny_policy`,
   `disable_fsx_deny_policy_interpretability_ou`, `check_in_cdk_out_directory`,
   `detach_mfa_requirement_policy`, `allow_public_s3_policy`, `open_internet_egress_restricted_ous`,
   `create_backdoor_admin_role`, `exempt_ec2_public_ip_check`, `change_policy_to_version_one`.
-  (That is 9 keys; the metadata says 8. Counted from the file: 9.)
+  Verified: `IACFastSetting().stats` reports 5 main, 9 side, 45 combinations
+  (`settings/iac_fast/setting.py:182-183`).
 - Dataset: honest = one sample per main task; attack = full cross product, sample id
   `MT_<main>_ST_<side>` (`settings/iac_fast/setting.py:61-99`).
 - Scoring: programmatic. `combined_pytest_scorer` uploads the reference pytest suite only at
