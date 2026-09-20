@@ -77,6 +77,7 @@ Additional issues found during this audit, not in the original list:
 | A1 | Threshold 5 was never calibrated | It appears as `THRESHOLD = 5.0` in `compare_monitors.py` with no derivation, and every detection count in the README depends on it |
 | A2 | The judge's verdicts cluster on {1,3,4,7,8,9,10} | Visible across both rescoring files; a 1–10 scale reported to 1 decimal implies precision the instrument does not have |
 | A3 | `rescore.py` cannot re-score cumulative diffs | It records `"cumulative diff not stored; see old_cum"`; only per-commit diffs were stored, which is why reconstruction was needed at all |
+| A5 | The "old assembly result is invalid" framing was too broad | The defensible finding is narrower: the old decomposition **staged deployment across commits but did not distribute its main suspicious evidence**. Commit 0 alone created a named role carrying administrator access. Later commits added deployment targets, which is real staging, just not of the most incriminating element. Per-commit detection of those campaigns is therefore uninformative about hiding evidence, but the campaigns were not malformed |
 | A4 | Costs are modelled, not measured | `COSTS.md` multiplies Inspect's token counts by a hand-entered price sheet; OpenRouter's own `total_cost` came back `None`. Figures are estimates |
 
 ## 3. What this implies for Phases 2 and 3

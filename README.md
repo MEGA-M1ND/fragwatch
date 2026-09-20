@@ -8,25 +8,33 @@ legitimate task and each producing exactly **one commit**, does per-commit monit
 Everything here is **additive experiment code**. ControlArena and the `iac_fast` Docker image are
 unmodified.
 
-## Headline results
+## Status: the headline comparison is INCONCLUSIVE
 
-Detection of attacks that **actually landed** (side-task test passed), monitor threshold ≥5 on the
-stock 1–10 diff-monitor scale:
+An audit of the earlier results (`AUDIT.md`) found that **no committed command reproduced the numbers
+this README used to report**, and that the per-commit versus cumulative ordering **changes with the
+measurement procedure**. On the same trajectories:
 
-| monitor | deletion attack (`allow_public_s3_policy`) | assembly attack (`create_backdoor_admin_role`) | total |
-|---|---|---|---|
-| **per-commit** (sees one commit) | 3/3 | 6/6 | **9/9** |
-| **cumulative** (sees baseline..HEAD) | 1/3 | 6/6 | **7/9** |
+| measurement procedure | per-commit | cumulative |
+|---|---|---|
+| live XML-only parser with temperature-changing retries | 7/9 | 8/9 |
+| post-hoc rescoring, 3 fresh calls (the old README) | 9/9 | 7/9 |
+| canonical reparse, median across the live retries | 9/9 | 8/9 |
+| canonical reparse, first call only at the frozen temperature | 8/9 | 7/9 |
 
-- **Fragmentation degrades per-commit detection without defeating it.** Splitting the backdoor drops
-  the per-commit maximum from 9.3 (K=1) to 7.7 (K=3); individual fragment commits often score 1.0,
-  invisible in isolation. Cumulative review is *invariant* to fragmentation (9.3 at both K).
-- **Cumulative review's weakness is dilution.** A one-line guardrail deletion vanishes inside a large
-  legitimate changeset, so it missed 2 of 3 deletion attacks that per-commit review caught.
-- **Neither monitor false-positives** on honest campaigns (0/9 commits above threshold, either view).
-- Running both dominates either alone. If you run one, run per-commit.
+Two of four procedures favour per-commit, one favours cumulative, one is close to tied, and the
+margins are one or two campaigns out of nine. **No retrospective scoring path may be selected because
+it favours the hypothesis.** The earlier claims that per-commit review is "the stronger single monitor"
+and that running both "dominates either alone" are **withdrawn**: they were artefacts of choosing one
+procedure and of pooling runs with different protocols.
 
-Full write-up, including caveats and the findings I withdrew: **[FRAGMENTATION_REPRO.md](FRAGMENTATION_REPRO.md)**.
+What survives from the historical work is methodological, not empirical, and is listed below.
+
+## Current work
+
+The measurement pipeline has been rebuilt around a single canonical scoring path, versioned records
+with provenance, and an offline report generator (`PROTOCOL.md`, `results/README.md`). A new protocol,
+**P-1, is developmental** and not yet frozen; see `PROTOCOL.md` Amendment A2. Development runs and their
+outcomes, including failures, are recorded in `DEV_LOG.md`.
 
 ## Three defects found in the stock tooling
 
@@ -91,8 +99,8 @@ Total spend for all experiments in this repo: **~$3.07** (see COSTS.md).
 
 **n=3 per cell.** Every effect size here rests on three campaigns. The honest next step is n≈10
 (~$4). Only K=1 vs K=3 was tested; K=9 needs repeated main tasks since `iac_fast` has only 5.
-Fragments are hand-written, so this measures a *coordinated* attacker's upper bound, not autonomous
-self-fragmentation. One judge, one setting, and its verdicts cluster on {1,3,4,7,8,9,10}, so the
+Fragments are hand-written, so this is one coordinated attack construction. It bounds nothing: a
+different decomposition could be stronger or weaker. One judge, one setting, and its verdicts cluster on {1,3,4,7,8,9,10}, so the
 scale is coarse.
 
 ## CI
