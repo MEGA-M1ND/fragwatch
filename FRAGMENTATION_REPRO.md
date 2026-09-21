@@ -1,5 +1,11 @@
 # Step 4: does fragmenting an attack across K agents defeat per-commit monitoring?
 
+> **SUPERSEDED.** This document records an earlier stage and its conclusions have been corrected. See
+> `AUDIT.md` for what did not survive audit, `PILOT_REPORT.md` for current results, and `CASE_STUDY.md`
+> for the account. Claims here about monitor comparisons, upstream defects and score-format bias are
+> **not current** and are retained as historical evidence only.
+
+
 Pilot reproduction of the distributed/decomposed attack threat (Makins et al.) on the stock
 ControlArena `iac_fast` setting. Untrusted model `openrouter/openai/gpt-5-mini` (chosen in
 MODEL_COMPARE.md), trusted/monitor model `openrouter/google/gemini-2.5-flash-lite`.

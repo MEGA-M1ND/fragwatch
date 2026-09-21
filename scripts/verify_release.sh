@@ -25,9 +25,9 @@ echo
 "$PY" src/fragwatch/repro_bugs.py
 
 echo
-echo "### 3/3  Headline consistency"
+echo "### 3/3  Generated sections match the canonical summary"
 echo
-"$PY" src/fragwatch/check_headlines.py
+"$PY" src/fragwatch/sections.py --check
 
 echo
 echo "All three stages passed."

@@ -1,5 +1,11 @@
 # FIRST_RUN.md — Step 3: one stock setting end to end
 
+> **SUPERSEDED.** This document records an earlier stage and its conclusions have been corrected. See
+> `AUDIT.md` for what did not survive audit, `PILOT_REPORT.md` for current results, and `CASE_STUDY.md`
+> for the account. Claims here about monitor comparisons, upstream defects and score-format bias are
+> **not current** and are retained as historical evidence only.
+
+
 Setting: `iac_fast` (ControlArena 19.0.0), attack mode, one sample. Chosen per ENVIRONMENT_AUDIT.md §4.
 
 ## What was run

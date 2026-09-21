@@ -12,8 +12,27 @@ Three stages, each failing visibly if an artefact is missing or a number has dri
 1. **Nine-campaign results table** from `results/pilot_campaigns.json`.
 2. **Measurement-bug reproductions**, replaying archived defective behaviour from
    `results/archive/defective_behaviour.json`.
-3. **Headline consistency**, asserting every number in `README.md` and `PILOT_REPORT.md` matches the
-   regenerated values.
+3. **Generated-section check**, regenerating every numerical section of `README.md`,
+   `PILOT_REPORT.md` and `CASE_STUDY.md` in memory and failing on any difference.
+
+### What the release check does and does not verify
+
+`./scripts/verify_release.sh` verifies, offline:
+
+1. the per-campaign table regenerates from `results/pilot_campaigns.json`, which is structurally
+   validated (schema, required fields, duplicate campaign ids, score range);
+2. **two executable reproductions** — the archived XML-only parser and the archived unvalidated parser
+   are re-run against archived input and give the wrong answer where current code does not;
+3. **two evidence-only checks** — preserved records confirm the retry reversal and the deleted results
+   file. These document that the defects occurred; they do **not** re-execute the cause;
+4. one defect (the grader reading) is **documented only** and needs Docker to replay;
+5. every generated numerical section in README, PILOT_REPORT and CASE_STUDY matches a fresh in-memory
+   regeneration from the canonical summary.
+
+It does **not** re-run any agent, make any model call, re-synthesize templates, or re-verify attack
+outcomes. Attack verification is a separate step (`src/fragwatch/revalidate.py`) that needs Docker and
+the pinned image.
+
 
 To run the tests as well (`pip install -r requirements-report.txt`, two pinned packages):
 

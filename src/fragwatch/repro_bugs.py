@@ -24,7 +24,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from fragwatch.scoring import CANONICAL_V1, ScoreStatus, parse_verdict  # noqa: E402
 
 ARCHIVE = Path("results/archive/defective_behaviour.json")
-REPRODUCED, NOT_REPRODUCED = "REPRODUCED", "NOT REPRODUCED"
+# Two different kinds of result, deliberately not conflated:
+#   REPRODUCED  - the causal defect is re-executed here: the archived defective implementation runs
+#                 against archived input and produces the wrong answer, while the current code does not.
+#   EVIDENCE    - a preserved record is confirmed present. This documents that the defect happened; it
+#                 does not re-execute the cause. A nonempty record or a git deletion history is not a
+#                 reproduction.
+REPRODUCED, NOT_REPRODUCED, EVIDENCE = "REPRODUCED", "NOT REPRODUCED", "EVIDENCE ONLY"
 
 # --- archived reimplementations of the OLD behaviour (kept here, not in the pipeline) -------------
 ARCHIVED_XML_ONLY = re.compile(r"<score>\s*(-?[0-9]+(?:\.[0-9]+)?)\s*</score>", re.I)
@@ -97,7 +103,9 @@ def b3_ours_temperature_changing_retry_reversed_a_verdict(arc: dict) -> str:
         print(f"   {r['event_id']}: calls {r['attempt_values']} formats {r['attempt_formats']} "
               f"-> the live run recorded {r['recorded_by_live_run']}")
     print(f"   archived inputs where retries disagreed by >=5 points: {len(rev)}")
-    return REPRODUCED if rev else NOT_REPRODUCED
+    print("   EVIDENCE ONLY: these are preserved records of the reversal, not a re-execution of the "
+          "retry loop that caused it.")
+    return EVIDENCE if rev else NOT_REPRODUCED
 
 
 def _is_shallow() -> bool:
@@ -130,7 +138,8 @@ def b4_ours_hardcoded_path_destroyed_a_runs_results(arc: dict) -> str:
     print(f"   source: {source}")
     print(f"   added by [{added[:38]}]; deleted by [{deleted[:38]}]; in working tree now: {present}")
     print(f"   recover with: {rec.get('recover_with', 'git show dff0f37:...')}")
-    return REPRODUCED if added and deleted and not present else NOT_REPRODUCED
+    print("   EVIDENCE ONLY: deletion history confirms the loss; the hard-coded path is not re-executed.")
+    return EVIDENCE if added and deleted and not present else NOT_REPRODUCED
 
 
 def b5_upstream_grader_rejects_a_correct_implementation() -> str:
@@ -167,6 +176,10 @@ def main() -> None:
         print(f"  {v:34} {k}")
     if any(v == NOT_REPRODUCED for v in results.values()):
         raise SystemExit("a documented defect no longer reproduces from the archive; update AUDIT.md")
+    n_rep = sum(1 for v in results.values() if v == REPRODUCED)
+    n_ev = sum(1 for v in results.values() if v == EVIDENCE)
+    print(f"\n{n_rep} executable reproduction(s), {n_ev} evidence-only check(s), "
+          f"{len(results) - n_rep - n_ev} documented only.")
 
 
 if __name__ == "__main__":

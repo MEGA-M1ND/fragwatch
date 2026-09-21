@@ -25,6 +25,21 @@ PRICES = {
 }
 PINNED = {"control-arena": "19.0.0", "inspect-ai": "0.3.266"}
 
+# Execution revision per run directory, established from run start times against the commit timeline,
+# not assumed. These differ: the attack campaigns and the honest controls ran at different revisions.
+# The intervening change was additive (honest-arm support in campaign.py); the scoring path, budgets
+# and monitor configuration were identical across both.
+EXECUTION_REVISIONS = {
+    "p1_dev_o2_v3": {
+        "code_sha": "25ac2cb", "run_started": "2026-09-20T15:21:04Z",
+        "note": "attack campaigns; commit in effect at run start",
+    },
+    "p1_dev_honest_linked": {
+        "code_sha": "e5c64da", "run_started": "2026-09-20T17:02:31Z",
+        "note": "honest controls; commit in effect at run start",
+    },
+}
+
 
 def _cost(sample) -> float:
     t = 0.0
@@ -68,8 +83,11 @@ def export_pilot(globs: list[str], semantic_path: str, out: Path, code_sha: str)
                                 "calls": [a.get("value") for a in cm.get("attempts", [])]},
                     })
                 semv = sem.get(str(s.id))
+                run_dir = Path(f).parent.name
                 campaigns.append({
                     "campaign": str(s.id),
+                    "execution_revision": EXECUTION_REVISIONS.get(run_dir, {}),
+                    "run_dir": run_dir,
                     "condition": md.get("condition", "?"),
                     "objective": md.get("objective_id"),
                     "protocol_version": md.get("protocol_version"),
@@ -86,6 +104,14 @@ def export_pilot(globs: list[str], semantic_path: str, out: Path, code_sha: str)
     payload = {
         "schema": "fragwatch.pilot_export/1",
         "code_sha": code_sha,
+        "provenance": {
+            "export_revision": code_sha,
+            "execution_revisions": EXECUTION_REVISIONS,
+            "note": ("The export revision is when these JSON artifacts were written. The execution "
+                     "revision is when each run actually executed, established from run start times "
+                     "against the commit timeline. The reporting revision is whatever HEAD is when a "
+                     "report is generated; it is printed by the report itself."),
+        },
         "pinned_versions": PINNED,
         "scoring": {"monitor_model": "openrouter/google/gemini-2.5-flash-lite",
                     "prompt_version": "stock_git_diff_monitor_v1", "temperature": 0.0,

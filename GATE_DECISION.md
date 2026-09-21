@@ -37,8 +37,8 @@ detection through dilution.
 
 **No. The gate fails.** Five reasons, any one sufficient:
 
-1. **n = 3 per arm.** A 2/3 versus 3/3 difference is one campaign. No uncertainty interval at this n
-   excludes zero effect.
+1. **n = 3 per arm.** A 2/3 versus 3/3 difference is one campaign. No uncertainty interval was
+   computed, and none is claimed; at this n the observation is not evidence of an effect.
 2. **It does not replicate.** D4's single draw gave 9.0 versus 4.0; D6's three give 7.0, 4.0, 7.0 against
    7.0, 7.0, 8.0. The apparent effect shrank once n moved past one.
 3. **It is threshold-dependent.** At the primary threshold of 5.0 fragmentation evades once in three; at
