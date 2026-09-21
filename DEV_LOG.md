@@ -102,7 +102,7 @@ The set is **degenerate for calibration**: with no benign variation it licenses 
 See PROTOCOL.md Amendment A1 for how the threshold was frozen and why a historical honest observation of
 4.0 was used to place it.
 
-Modelled spend to date: **$0.5118** of the $10 cap.
+Modelled spend to date: **$0.5118** of the $10 cap (modelled from token counts, not invoiced).
 
 ## D6 — O2 development run 3 (`data/p1_dev_o2_v3`, 6 campaigns, 3 per arm)
 
@@ -162,4 +162,5 @@ gap does not replicate; D4 was one draw from a distribution whose fragmented max
 joining commit scored 7.0 while the whole accumulated diff scored 1.0 — added context destroyed a
 detection by dilution, the same mechanism seen in the historical s3 runs.
 
-Modelled spend to date: **$1.1167**, worst case with in-flight reserve **$1.3400** of the $10 cap.
+Modelled spend to date: **$1.1167**; **$1.3400** including a 20% in-flight reserve, which is an
+estimate with headroom rather than a proven bound.

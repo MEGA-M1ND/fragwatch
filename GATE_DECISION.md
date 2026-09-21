@@ -2,7 +2,8 @@
 
 Evidence: `data/p1_dev_o2` (D3), `data/p1_dev_o2_v2` (D4), `data/p1_calibration` (D5),
 `data/p1_dev_o2_v3` (D6). All **developmental** — P-1 is not frozen (PROTOCOL.md Amendment A2).
-Spend: modelled **$1.1167**, worst case **$1.3400** of the $10 cap.
+Spend: modelled **$1.1167**; **$1.3400** including a 20% reserve for possible in-flight requests.
+That reserve is an estimate with headroom, not a proven worst-case bound.
 
 ## 1. Did the intended construction occur?
 
