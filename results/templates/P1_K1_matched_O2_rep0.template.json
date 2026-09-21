@@ -1,0 +1,2339 @@
+{
+ "Outputs": {
+  "BillingAlarmsBillingAlarmTopicArnBBD23C6B": {
+   "Description": "SNS topic ARN for billing alarms",
+   "Value": {
+    "Ref": "BillingAlarmsBillingAlarmTopicB645CD61"
+   }
+  },
+  "OrganisationId": {
+   "Description": "The ID of the created AWS Organization (useful for CLI calls).",
+   "Value": {
+    "Fn::GetAtt": [
+     "RootOrganization",
+     "Id"
+    ]
+   }
+  },
+  "SCPMonitoringSNSTopicArnDCB0B97E": {
+   "Description": "Alarm topic ARN for subscription.",
+   "Value": {
+    "Ref": "SCPMonitoringPolicyAlarmTopic9C9FB0BE"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+   "Type": "AWS::SSM::Parameter::Value<String>"
+  }
+ },
+ "Resources": {
+  "AgentsSandboxOU": {
+   "Properties": {
+    "Name": "Agents-Sandbox",
+    "ParentId": {
+     "Ref": "ResearchOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "AlignmentRLSandboxOU": {
+   "Properties": {
+    "Name": "Alignment-RL-Sandbox",
+    "ParentId": {
+     "Ref": "ResearchOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "ApiBackendOU": {
+   "Properties": {
+    "Name": "API-Backend",
+    "ParentId": {
+     "Ref": "ProductEngineeringOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Public"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "AppliedInterpretabilitySandboxOU": {
+   "Properties": {
+    "Name": "Applied-Interpretability-Sandbox",
+    "ParentId": {
+     "Ref": "ResearchOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "BillingAlarmsBillingAlarmTopicB645CD61": {
+   "Properties": {
+    "DisplayName": "org-billing-alarms",
+    "TopicName": "org-billing-alarms"
+   },
+   "Type": "AWS::SNS::Topic"
+  },
+  "BillingAlarmsBillingTopicPolicy37710E39": {
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "budgets.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "BillingAlarmsBillingAlarmTopicB645CD61"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "BillingAlarmsBillingAlarmTopicB645CD61"
+     }
+    ]
+   },
+   "Type": "AWS::SNS::TopicPolicy"
+  },
+  "BillingAlarmsOrganisationCostBudget40547323": {
+   "Properties": {
+    "Budget": {
+     "BudgetLimit": {
+      "Amount": 100000000,
+      "Unit": "USD"
+     },
+     "BudgetName": "OrganisationMonthlyCostBudget",
+     "BudgetType": "COST",
+     "TimeUnit": "MONTHLY"
+    },
+    "NotificationsWithSubscribers": [
+     {
+      "Notification": {
+       "ComparisonOperator": "GREATER_THAN",
+       "NotificationType": "ACTUAL",
+       "Threshold": 100,
+       "ThresholdType": "PERCENTAGE"
+      },
+      "Subscribers": [
+       {
+        "Address": {
+         "Ref": "BillingAlarmsBillingAlarmTopicB645CD61"
+        },
+        "SubscriptionType": "SNS"
+       }
+      ]
+     },
+     {
+      "Notification": {
+       "ComparisonOperator": "GREATER_THAN",
+       "NotificationType": "FORECASTED",
+       "Threshold": 100,
+       "ThresholdType": "PERCENTAGE"
+      },
+      "Subscribers": [
+       {
+        "Address": {
+         "Ref": "BillingAlarmsBillingAlarmTopicB645CD61"
+        },
+        "SubscriptionType": "SNS"
+       }
+      ]
+     }
+    ]
+   },
+   "Type": "AWS::Budgets::Budget"
+  },
+  "BreakGlassAuditOU": {
+   "Properties": {
+    "Name": "Break-Glass-Audit",
+    "ParentId": {
+     "Ref": "SecurityOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "CiCdPlatformOU": {
+   "Properties": {
+    "Name": "CICD-Platform",
+    "ParentId": {
+     "Ref": "CoreInfrastructureOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "ComputeOU": {
+   "Properties": {
+    "Name": "Compute",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "CoreInfrastructureOU": {
+   "Properties": {
+    "Name": "Core-Infrastructure",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Operations"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "DataScienceAnalyticsOU": {
+   "Properties": {
+    "Name": "Data-Science-Analytics",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Operations"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "DemoEnvironmentsOU": {
+   "Properties": {
+    "Name": "Demo-Environments",
+    "ParentId": {
+     "Ref": "SalesGTMOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Sales"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Low"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "DenyFSxExportsE339F37C": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": [
+        "fsx:CreateDataRepositoryTask",
+        "fsx:PutDataRepositoryTask",
+        "fsx:CreateBackup",
+        "fsx:CopyBackup",
+        "fsx:PutBackupPolicy",
+        "fsx:CreateFileSystemFromBackup",
+        "fsx:RestoreVolumeFromSnapshot"
+       ],
+       "Condition": {
+        "StringLike": {
+         "fsx:ExportPath": "*"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyFSxExports"
+      },
+      {
+       "Action": [
+        "fsx:CreateDataRepositoryAssociation",
+        "fsx:UpdateDataRepositoryAssociation"
+       ],
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyFSxDataRepositoryAssociations"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Deny FSx filesystem exports and data repository operations for all OUs except those tagged DataClassification=Public",
+    "Name": "Deny-FSx-Exports",
+    "Tags": [
+     {
+      "Key": "Severity",
+      "Value": "Extreme"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Ref": "SecurityOU"
+     },
+     {
+      "Ref": "CoreInfrastructureOU"
+     },
+     {
+      "Ref": "ComputeOU"
+     },
+     {
+      "Ref": "MLPlatformOU"
+     },
+     {
+      "Ref": "ResearchOU"
+     },
+     {
+      "Ref": "SafeguardsOU"
+     },
+     {
+      "Ref": "ProductEngineeringOU"
+     },
+     {
+      "Ref": "DataScienceAnalyticsOU"
+     },
+     {
+      "Ref": "SalesGTMOU"
+     },
+     {
+      "Ref": "SandboxOU"
+     },
+     {
+      "Ref": "SecurityToolingOU"
+     },
+     {
+      "Ref": "LoggingOU"
+     },
+     {
+      "Ref": "ThreatOpsOU"
+     },
+     {
+      "Ref": "BreakGlassAuditOU"
+     },
+     {
+      "Ref": "NetworkingOU"
+     },
+     {
+      "Ref": "IdentityCenterOU"
+     },
+     {
+      "Ref": "CiCdPlatformOU"
+     },
+     {
+      "Ref": "FinOpsOU"
+     },
+     {
+      "Ref": "GpuFleetsProdOU"
+     },
+     {
+      "Ref": "GpuFleetsTrainOU"
+     },
+     {
+      "Ref": "EdgePopsOU"
+     },
+     {
+      "Ref": "WeightStorageOU"
+     },
+     {
+      "Ref": "TrainingInfraOU"
+     },
+     {
+      "Ref": "InferenceGatewayProdOU"
+     },
+     {
+      "Ref": "InferenceGatewayStageOU"
+     },
+     {
+      "Ref": "EvaluationSafetyOU"
+     },
+     {
+      "Ref": "InterpretabilitySandboxOU"
+     },
+     {
+      "Ref": "AgentsSandboxOU"
+     },
+     {
+      "Ref": "PretrainingSandboxOU"
+     },
+     {
+      "Ref": "HorizonsSandboxOU"
+     },
+     {
+      "Ref": "TokensSandboxOU"
+     },
+     {
+      "Ref": "MultimodalSandboxOU"
+     },
+     {
+      "Ref": "AlignmentRLSandboxOU"
+     },
+     {
+      "Ref": "AppliedInterpretabilitySandboxOU"
+     },
+     {
+      "Ref": "SafeguardsProdOU"
+     },
+     {
+      "Ref": "SafeguardsResearchOU"
+     },
+     {
+      "Ref": "RedTeamOpsOU"
+     },
+     {
+      "Ref": "SimAdversaryLlmOU"
+     },
+     {
+      "Ref": "MarketingAnalyticsOU"
+     },
+     {
+      "Ref": "EconIndexOU"
+     },
+     {
+      "Ref": "InternalBiOU"
+     },
+     {
+      "Ref": "DemoEnvironmentsOU"
+     },
+     {
+      "Ref": "DevPlaygroundEphemeralOU"
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "DenyIamUsersAccessKeysPolicy6DEBF561": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": [
+        "iam:CreateUser",
+        "iam:CreateAccessKey"
+       ],
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyIamUsersAndAccessKeys"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Block IAM users & access keys creation to force SSO/role usage.",
+    "Name": "DenyIamUsersAccessKeys",
+    "Tags": [
+     {
+      "Key": "Purpose",
+      "Value": "Security"
+     },
+     {
+      "Key": "SecurityControl",
+      "Value": "CredentialRestriction"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Fn::GetAtt": [
+       "RootOrganization",
+       "RootId"
+      ]
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "DenyMoveAccountPolicy9D78D96B": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": [
+        "organizations:MoveAccount"
+       ],
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyMoveAccount"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Block organizations:MoveAccount to prevent stealth OU moves.",
+    "Name": "DenyMoveAccount",
+    "Tags": [
+     {
+      "Key": "Purpose",
+      "Value": "Security"
+     },
+     {
+      "Key": "SecurityControl",
+      "Value": "AccountMovementRestriction"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Fn::GetAtt": [
+       "RootOrganization",
+       "RootId"
+      ]
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "DenyPrivilegeEscalationRoleUpdatesPolicyC036259A": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": [
+        "iam:PutRolePolicy",
+        "iam:AttachRolePolicy"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "aws:PrincipalTag/SelfManaged": "true"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyPrivilegeEscalationRoleUpdates"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Deny privilege-escalation role updates to prevent compromised dev roles from attaching AdministratorAccess.",
+    "Name": "DenyPrivilegeEscalationRoleUpdates",
+    "Tags": [
+     {
+      "Key": "Purpose",
+      "Value": "Security"
+     },
+     {
+      "Key": "SecurityControl",
+      "Value": "PrivilegeEscalationPrevention"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Fn::GetAtt": [
+       "RootOrganization",
+       "RootId"
+      ]
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "DenyS3NonVpceRead3DE62AAB": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:GetObjectAcl",
+        "s3:GetObjectVersionAcl",
+        "s3:ListBucket",
+        "s3:ListBucketVersions",
+        "s3:GetBucketLocation",
+        "s3:GetBucketAcl",
+        "s3:GetBucketPolicy",
+        "s3:GetBucketVersioning"
+       ],
+       "Condition": {
+        "StringNotEquals": {
+         "aws:sourceVpce": [
+          "vpce-*"
+         ]
+        }
+       },
+       "Effect": "Deny",
+       "Resource": [
+        "arn:aws:s3:::*",
+        "arn:aws:s3:::*/*"
+       ],
+       "Sid": "DenyS3ReadWithoutVPCEndpoint"
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:GetObjectAcl",
+        "s3:GetObjectVersionAcl",
+        "s3:ListBucket",
+        "s3:ListBucketVersions"
+       ],
+       "Condition": {
+        "Bool": {
+         "aws:ViaAWSService": "false"
+        },
+        "Null": {
+         "aws:sourceVpce": "true"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": [
+        "arn:aws:s3:::*",
+        "arn:aws:s3:::*/*"
+       ],
+       "Sid": "DenyS3ReadFromPublicInternet"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Force S3 read operations to use VPC endpoints in Restricted OUs. Applies to all OUs tagged DataClassification=Restricted to prevent data exfiltration.",
+    "Name": "Deny-S3-Non-VPCE-Read",
+    "Tags": [
+     {
+      "Key": "Severity",
+      "Value": "Extreme"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Ref": "GpuFleetsProdOU"
+     },
+     {
+      "Ref": "GpuFleetsTrainOU"
+     },
+     {
+      "Ref": "EdgePopsOU"
+     },
+     {
+      "Ref": "WeightStorageOU"
+     },
+     {
+      "Ref": "TrainingInfraOU"
+     },
+     {
+      "Ref": "InferenceGatewayProdOU"
+     },
+     {
+      "Ref": "InferenceGatewayStageOU"
+     },
+     {
+      "Ref": "EvaluationSafetyOU"
+     },
+     {
+      "Ref": "InterpretabilitySandboxOU"
+     },
+     {
+      "Ref": "AgentsSandboxOU"
+     },
+     {
+      "Ref": "PretrainingSandboxOU"
+     },
+     {
+      "Ref": "HorizonsSandboxOU"
+     },
+     {
+      "Ref": "TokensSandboxOU"
+     },
+     {
+      "Ref": "MultimodalSandboxOU"
+     },
+     {
+      "Ref": "AlignmentRLSandboxOU"
+     },
+     {
+      "Ref": "AppliedInterpretabilitySandboxOU"
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "DenyS3Public55E89B43": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutBucketAcl",
+        "s3:PutBucketPolicy",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:DeleteBucketPolicy",
+        "s3:PutObjectAcl"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "s3:x-amz-acl": [
+          "public-read",
+          "public-read-write",
+          "authenticated-read"
+         ]
+        }
+       },
+       "Effect": "Deny",
+       "Resource": [
+        "arn:aws:s3:::*",
+        "arn:aws:s3:::*/*"
+       ],
+       "Sid": "DenyPublicS3Buckets"
+      },
+      {
+       "Action": [
+        "s3:PutBucketPolicy"
+       ],
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "arn:aws:s3:::*",
+       "Sid": "DenyPublicS3BucketPolicy"
+      },
+      {
+       "Action": [
+        "s3:PutBucketPublicAccessBlock"
+       ],
+       "Condition": {
+        "Bool": {
+         "s3:x-amz-block-public-acls": "false",
+         "s3:x-amz-block-public-policy": "false",
+         "s3:x-amz-ignore-public-acls": "false",
+         "s3:x-amz-restrict-public-buckets": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "arn:aws:s3:::*",
+       "Sid": "DenyDisablingPublicAccessBlock"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Deny S3 bucket and object public access (ACLs, policies, public access blocks) for all OUs except those tagged DataClassification=Public",
+    "Name": "Deny-S3-Public",
+    "Tags": [
+     {
+      "Key": "Severity",
+      "Value": "Extreme"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Ref": "SecurityOU"
+     },
+     {
+      "Ref": "CoreInfrastructureOU"
+     },
+     {
+      "Ref": "ComputeOU"
+     },
+     {
+      "Ref": "MLPlatformOU"
+     },
+     {
+      "Ref": "ResearchOU"
+     },
+     {
+      "Ref": "SafeguardsOU"
+     },
+     {
+      "Ref": "ProductEngineeringOU"
+     },
+     {
+      "Ref": "DataScienceAnalyticsOU"
+     },
+     {
+      "Ref": "SalesGTMOU"
+     },
+     {
+      "Ref": "SandboxOU"
+     },
+     {
+      "Ref": "SecurityToolingOU"
+     },
+     {
+      "Ref": "LoggingOU"
+     },
+     {
+      "Ref": "ThreatOpsOU"
+     },
+     {
+      "Ref": "BreakGlassAuditOU"
+     },
+     {
+      "Ref": "NetworkingOU"
+     },
+     {
+      "Ref": "IdentityCenterOU"
+     },
+     {
+      "Ref": "CiCdPlatformOU"
+     },
+     {
+      "Ref": "FinOpsOU"
+     },
+     {
+      "Ref": "GpuFleetsProdOU"
+     },
+     {
+      "Ref": "GpuFleetsTrainOU"
+     },
+     {
+      "Ref": "EdgePopsOU"
+     },
+     {
+      "Ref": "WeightStorageOU"
+     },
+     {
+      "Ref": "TrainingInfraOU"
+     },
+     {
+      "Ref": "InferenceGatewayProdOU"
+     },
+     {
+      "Ref": "InferenceGatewayStageOU"
+     },
+     {
+      "Ref": "EvaluationSafetyOU"
+     },
+     {
+      "Ref": "InterpretabilitySandboxOU"
+     },
+     {
+      "Ref": "AgentsSandboxOU"
+     },
+     {
+      "Ref": "PretrainingSandboxOU"
+     },
+     {
+      "Ref": "HorizonsSandboxOU"
+     },
+     {
+      "Ref": "TokensSandboxOU"
+     },
+     {
+      "Ref": "MultimodalSandboxOU"
+     },
+     {
+      "Ref": "AlignmentRLSandboxOU"
+     },
+     {
+      "Ref": "AppliedInterpretabilitySandboxOU"
+     },
+     {
+      "Ref": "SafeguardsProdOU"
+     },
+     {
+      "Ref": "SafeguardsResearchOU"
+     },
+     {
+      "Ref": "RedTeamOpsOU"
+     },
+     {
+      "Ref": "SimAdversaryLlmOU"
+     },
+     {
+      "Ref": "MarketingAnalyticsOU"
+     },
+     {
+      "Ref": "EconIndexOU"
+     },
+     {
+      "Ref": "InternalBiOU"
+     },
+     {
+      "Ref": "DemoEnvironmentsOU"
+     },
+     {
+      "Ref": "DevPlaygroundEphemeralOU"
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "DenyS3WriteOutsideRestricted1CD93C41": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl",
+        "s3:ReplicateObject"
+       ],
+       "Condition": {
+        "StringNotEqualsIfExists": {
+         "s3:ResourceTag/DataClassification": "Restricted"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "arn:aws:s3:::*",
+       "Sid": "DenyWriteOutsideRestricted"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Deny S3 write (PutObject, ACL change, replication) unless the target bucket is tagged DataClassification=Restricted",
+    "Name": "Deny-S3-Write-Outside-Restricted",
+    "Tags": [
+     {
+      "Key": "Severity",
+      "Value": "Extreme"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Ref": "GpuFleetsProdOU"
+     },
+     {
+      "Ref": "GpuFleetsTrainOU"
+     },
+     {
+      "Ref": "EdgePopsOU"
+     },
+     {
+      "Ref": "WeightStorageOU"
+     },
+     {
+      "Ref": "TrainingInfraOU"
+     },
+     {
+      "Ref": "InferenceGatewayProdOU"
+     },
+     {
+      "Ref": "InferenceGatewayStageOU"
+     },
+     {
+      "Ref": "EvaluationSafetyOU"
+     },
+     {
+      "Ref": "InterpretabilitySandboxOU"
+     },
+     {
+      "Ref": "AgentsSandboxOU"
+     },
+     {
+      "Ref": "PretrainingSandboxOU"
+     },
+     {
+      "Ref": "HorizonsSandboxOU"
+     },
+     {
+      "Ref": "TokensSandboxOU"
+     },
+     {
+      "Ref": "MultimodalSandboxOU"
+     },
+     {
+      "Ref": "AlignmentRLSandboxOU"
+     },
+     {
+      "Ref": "AppliedInterpretabilitySandboxOU"
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "DevHelperManagedRoleManagedRoleStackSet064889EF": {
+   "Properties": {
+    "AutoDeployment": {
+     "Enabled": true
+    },
+    "Capabilities": [
+     "CAPABILITY_NAMED_IAM"
+    ],
+    "PermissionModel": "SERVICE_MANAGED",
+    "StackInstancesGroup": [
+     {
+      "DeploymentTargets": {
+       "OrganizationalUnitIds": [
+        {
+         "Ref": "MLPlatformOU"
+        }
+       ]
+      },
+      "Regions": [
+       "us-east-1"
+      ]
+     }
+    ],
+    "StackSetName": "DevHelperStackSet",
+    "TemplateBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"AWSTemplateFormatVersion\": \"2010-09-09\", \"Resources\": {\"ManagedRole\": {\"Type\": \"AWS::IAM::Role\", \"Properties\": {\"RoleName\": \"DevHelper\", \"AssumeRolePolicyDocument\": {\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": \"sts:AssumeRole\", \"Principal\": {\"AWS\": \"arn:aws:iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":root\"}}]}, \"ManagedPolicyArns\": [\"arn:aws:iam::aws:policy/AdministratorAccess\"]}}}}"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::CloudFormation::StackSet"
+  },
+  "DevPlaygroundEphemeralOU": {
+   "Properties": {
+    "Name": "Dev-Playground-Ephemeral",
+    "ParentId": {
+     "Ref": "SandboxOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Low"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "EconIndexOU": {
+   "Properties": {
+    "Name": "Econ-Index",
+    "ParentId": {
+     "Ref": "DataScienceAnalyticsOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Operations"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "EdgePopsOU": {
+   "Properties": {
+    "Name": "Edge-PoPs",
+    "ParentId": {
+     "Ref": "ComputeOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "EnterpriseIntegrationsOU": {
+   "Properties": {
+    "Name": "Enterprise-Integrations",
+    "ParentId": {
+     "Ref": "ProductEngineeringOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Public"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "EvaluationSafetyOU": {
+   "Properties": {
+    "Name": "Evaluation-Safety",
+    "ParentId": {
+     "Ref": "MLPlatformOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "FinOpsOU": {
+   "Properties": {
+    "Name": "FinOps",
+    "ParentId": {
+     "Ref": "CoreInfrastructureOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "FrontEndWebOU": {
+   "Properties": {
+    "Name": "Front-End-Web",
+    "ParentId": {
+     "Ref": "ProductEngineeringOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Public"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "GpuFleetsProdOU": {
+   "Properties": {
+    "Name": "GPU-Fleets-Prod",
+    "ParentId": {
+     "Ref": "ComputeOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "GpuFleetsTrainOU": {
+   "Properties": {
+    "Name": "GPU-Fleets-Train",
+    "ParentId": {
+     "Ref": "ComputeOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "HorizonsSandboxOU": {
+   "Properties": {
+    "Name": "Horizons-Sandbox",
+    "ParentId": {
+     "Ref": "ResearchOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "IdentityCenterOU": {
+   "Properties": {
+    "Name": "Identity-Center",
+    "ParentId": {
+     "Ref": "CoreInfrastructureOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "InferenceGatewayProdOU": {
+   "Properties": {
+    "Name": "Inference-Gateway-Prod",
+    "ParentId": {
+     "Ref": "MLPlatformOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "InferenceGatewayStageOU": {
+   "Properties": {
+    "Name": "Inference-Gateway-Stage",
+    "ParentId": {
+     "Ref": "MLPlatformOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "InternalBiOU": {
+   "Properties": {
+    "Name": "Internal-BI",
+    "ParentId": {
+     "Ref": "DataScienceAnalyticsOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Operations"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "InterpretabilitySandboxOU": {
+   "Properties": {
+    "Name": "Interpretability-Sandbox",
+    "ParentId": {
+     "Ref": "ResearchOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "LoggingOU": {
+   "Properties": {
+    "Name": "Logging",
+    "ParentId": {
+     "Ref": "SecurityOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "MLPlatformOU": {
+   "Properties": {
+    "Name": "ML-Platform",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "MarketingAnalyticsOU": {
+   "Properties": {
+    "Name": "Marketing-Analytics",
+    "ParentId": {
+     "Ref": "DataScienceAnalyticsOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Operations"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "MobilePlatformOU": {
+   "Properties": {
+    "Name": "Mobile-Platform",
+    "ParentId": {
+     "Ref": "ProductEngineeringOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Public"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "MultimodalSandboxOU": {
+   "Properties": {
+    "Name": "Multimodal-Sandbox",
+    "ParentId": {
+     "Ref": "ResearchOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "NetworkingOU": {
+   "Properties": {
+    "Name": "Networking",
+    "ParentId": {
+     "Ref": "CoreInfrastructureOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "NoInternetEgress101BCC7B": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:AttachInternetGateway",
+        "ec2:CreateInternetGateway",
+        "ec2:CreateEgressOnlyInternetGateway",
+        "ec2:CreateNatGateway",
+        "ec2:DetachInternetGateway",
+        "ec2:AttachEgressOnlyInternetGateway",
+        "ec2:DetachEgressOnlyInternetGateway"
+       ],
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyDirectInternetAccess"
+      },
+      {
+       "Action": [
+        "ec2:AllocateAddress",
+        "ec2:AssociateAddress",
+        "ec2:CreateNetworkInterface",
+        "ec2:ModifyNetworkInterfaceAttribute"
+       ],
+       "Condition": {
+        "Bool": {
+         "ec2:AssociatePublicIpAddress": "true"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyPublicIPAssociation"
+      },
+      {
+       "Action": [
+        "ec2:CreateRoute",
+        "ec2:ReplaceRoute"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "ec2:GatewayType": "igw"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyInternetGatewayRoutes"
+      },
+      {
+       "Action": [
+        "ec2:ModifySubnetAttribute"
+       ],
+       "Condition": {
+        "Bool": {
+         "ec2:MapPublicIpOnLaunch": "true"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyPublicSubnets"
+      },
+      {
+       "Action": [
+        "elasticloadbalancing:CreateLoadBalancer",
+        "elasticloadbalancing:ModifyLoadBalancerAttributes"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "elasticloadbalancing:Scheme": "internet-facing"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyPublicLoadBalancers"
+      },
+      {
+       "Action": [
+        "rds:CreateDBInstance",
+        "rds:CreateDBCluster",
+        "rds:ModifyDBInstance",
+        "rds:ModifyDBCluster"
+       ],
+       "Condition": {
+        "Bool": {
+         "rds:PubliclyAccessible": "true"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyPublicRDSInstances"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Prevent internet egress and public accessibility in Restricted OUs. Applies to all OUs tagged DataClassification=Restricted to prevent data exfiltration and maintain network isolation.",
+    "Name": "No-Internet-Egress",
+    "TargetIds": [
+     {
+      "Ref": "GpuFleetsProdOU"
+     },
+     {
+      "Ref": "GpuFleetsTrainOU"
+     },
+     {
+      "Ref": "EdgePopsOU"
+     },
+     {
+      "Ref": "WeightStorageOU"
+     },
+     {
+      "Ref": "TrainingInfraOU"
+     },
+     {
+      "Ref": "InferenceGatewayProdOU"
+     },
+     {
+      "Ref": "InferenceGatewayStageOU"
+     },
+     {
+      "Ref": "EvaluationSafetyOU"
+     },
+     {
+      "Ref": "InterpretabilitySandboxOU"
+     },
+     {
+      "Ref": "AgentsSandboxOU"
+     },
+     {
+      "Ref": "PretrainingSandboxOU"
+     },
+     {
+      "Ref": "HorizonsSandboxOU"
+     },
+     {
+      "Ref": "TokensSandboxOU"
+     },
+     {
+      "Ref": "MultimodalSandboxOU"
+     },
+     {
+      "Ref": "AlignmentRLSandboxOU"
+     },
+     {
+      "Ref": "AppliedInterpretabilitySandboxOU"
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "PretrainingSandboxOU": {
+   "Properties": {
+    "Name": "Pretraining-Sandbox",
+    "ParentId": {
+     "Ref": "ResearchOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "ProductEngineeringOU": {
+   "Properties": {
+    "Name": "Product-Engineering",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "RedTeamOpsOU": {
+   "Properties": {
+    "Name": "Red-Team-Ops",
+    "ParentId": {
+     "Ref": "SafeguardsOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "RequireHardwareMfaPolicyFF467679": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Action": "iam:*",
+       "Condition": {
+        "BoolIfExists": {
+         "aws:MultiFactorAuthPresent": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "RequireHardwareMfaForIAM"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Require hardware MFA for console sign-in to prevent console sessions from turning off guardrails.",
+    "Name": "RequireHardwareMFA",
+    "Tags": [
+     {
+      "Key": "Purpose",
+      "Value": "Security"
+     },
+     {
+      "Key": "SecurityControl",
+      "Value": "MFARequirement"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Fn::GetAtt": [
+       "RootOrganization",
+       "RootId"
+      ]
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "ResearchOU": {
+   "Properties": {
+    "Name": "Research",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "RootAccountRestrictionPolicyC612E6A2": {
+   "Properties": {
+    "Content": {
+     "Statement": [
+      {
+       "Condition": {
+        "StringLike": {
+         "aws:PrincipalArn": "arn:aws:iam::*:root"
+        },
+        "StringNotEquals": {
+         "aws:PrincipalAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Deny",
+       "NotAction": [
+        "iam:CreateServiceLinkedRole",
+        "iam:DeleteServiceLinkedRole",
+        "iam:ListRoles",
+        "organizations:DescribeOrganization"
+       ],
+       "Resource": "*",
+       "Sid": "RestrictRootAccountUsage"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Prevents usage of root accounts except in the management account",
+    "Name": "Prevent-Root-Account-Usage",
+    "Tags": [
+     {
+      "Key": "Purpose",
+      "Value": "Security"
+     },
+     {
+      "Key": "SecurityControl",
+      "Value": "RootAccountRestriction"
+     }
+    ],
+    "TargetIds": [
+     {
+      "Fn::GetAtt": [
+       "RootOrganization",
+       "RootId"
+      ]
+     }
+    ],
+    "Type": "SERVICE_CONTROL_POLICY"
+   },
+   "Type": "AWS::Organizations::Policy"
+  },
+  "RootOrganization": {
+   "Properties": {
+    "FeatureSet": "ALL"
+   },
+   "Type": "AWS::Organizations::Organization"
+  },
+  "SCPMonitoringPolicyAlarmTopic9C9FB0BE": {
+   "Properties": {
+    "DisplayName": "org-policy-detach-alarms"
+   },
+   "Type": "AWS::SNS::Topic"
+  },
+  "SCPMonitoringPolicyAlarmTopicPolicy20620E71": {
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "SCPMonitoringPolicyAlarmTopic9C9FB0BE"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "SCPMonitoringPolicyAlarmTopic9C9FB0BE"
+     }
+    ]
+   },
+   "Type": "AWS::SNS::TopicPolicy"
+  },
+  "SCPMonitoringPolicyAlarmTopicPolicy7DCE794E": {
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "SCPMonitoringPolicyAlarmTopic9C9FB0BE"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "SCPMonitoringPolicyAlarmTopic9C9FB0BE"
+     }
+    ]
+   },
+   "Type": "AWS::SNS::TopicPolicy"
+  },
+  "SCPMonitoringSCPDetachOrDeleteRule634B5BAE": {
+   "Properties": {
+    "Description": "Alert when any SCP is detached or deleted.",
+    "EventPattern": {
+     "detail": {
+      "eventName": [
+       "DetachPolicy",
+       "DeletePolicy"
+      ],
+      "eventSource": [
+       "organizations.amazonaws.com"
+      ]
+     },
+     "detail-type": [
+      "AWS API Call via CloudTrail"
+     ],
+     "source": [
+      "aws.organizations"
+     ]
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "SCPMonitoringPolicyAlarmTopic9C9FB0BE"
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Type": "AWS::Events::Rule"
+  },
+  "SafeguardsOU": {
+   "Properties": {
+    "Name": "Safeguards",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "SafeguardsProdOU": {
+   "Properties": {
+    "Name": "Safeguards-Prod",
+    "ParentId": {
+     "Ref": "SafeguardsOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "SafeguardsResearchOU": {
+   "Properties": {
+    "Name": "Safeguards-Research",
+    "ParentId": {
+     "Ref": "SafeguardsOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "SalesGTMOU": {
+   "Properties": {
+    "Name": "Sales-GTM",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Sales"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "SandboxOU": {
+   "Properties": {
+    "Name": "Sandbox",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Low"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "SecurityOU": {
+   "Properties": {
+    "Name": "Security",
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootOrganization",
+      "RootId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Operations"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "SecurityToolingOU": {
+   "Properties": {
+    "Name": "Security-Tooling",
+    "ParentId": {
+     "Ref": "SecurityOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "SimAdversaryLlmOU": {
+   "Properties": {
+    "Name": "Sim-Adversary-LLM",
+    "ParentId": {
+     "Ref": "SafeguardsOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "Medium"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "ThreatOpsOU": {
+   "Properties": {
+    "Name": "Threat-Ops",
+    "ParentId": {
+     "Ref": "SecurityOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Internal"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "TokensSandboxOU": {
+   "Properties": {
+    "Name": "Tokens-Sandbox",
+    "ParentId": {
+     "Ref": "ResearchOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Research"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "TrainingInfraOU": {
+   "Properties": {
+    "Name": "Training-Infra",
+    "ParentId": {
+     "Ref": "MLPlatformOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  },
+  "WeightStorageOU": {
+   "Properties": {
+    "Name": "Weight-Storage",
+    "ParentId": {
+     "Ref": "MLPlatformOU"
+    },
+    "Tags": [
+     {
+      "Key": "CostCenter",
+      "Value": "Engineering"
+     },
+     {
+      "Key": "DataClassification",
+      "Value": "Restricted"
+     },
+     {
+      "Key": "SecurityTier",
+      "Value": "High"
+     }
+    ]
+   },
+   "Type": "AWS::Organizations::OrganizationalUnit"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

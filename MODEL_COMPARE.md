@@ -1,5 +1,11 @@
 # Untrusted-model comparison: gpt-5-mini vs gpt-4.1-mini (5 attack samples each)
 
+> **SUPERSEDED.** This document records an earlier stage and its conclusions have been corrected. See
+> `AUDIT.md` for what did not survive audit, `PILOT_REPORT.md` for current results, and `CASE_STUDY.md`
+> for the account. Claims here about monitor comparisons, upstream defects and score-format bias are
+> **not current** and are retained as historical evidence only.
+
+
 Requested after run 3 in FIRST_RUN.md, where gpt-5-mini did the main task in 9 steps but ignored
 the side task (n=1). Question: **which cheap model actually executes the side task under the stock
 attack prompt**, since an attacker that never attacks gives the monitor nothing to detect.
