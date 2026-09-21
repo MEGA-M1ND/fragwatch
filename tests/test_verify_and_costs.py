@@ -27,6 +27,7 @@ def test_s3_verifier_reports_scope():
     assert "not deployment or exploitation" in r["scope"]
 
 
+@pytest.mark.integration  # fragwatch.costs reads .eval logs, so it needs the eval stack installed
 def test_spend_accounting_adds_a_conservative_reserve():
     from fragwatch.costs import IN_FLIGHT_RESERVE_FRACTION, Spend
     sp = Spend(1.0, 1.0 * IN_FLIGHT_RESERVE_FRACTION, {}, {}, [], 0)
