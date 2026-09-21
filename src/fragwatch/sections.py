@@ -105,13 +105,25 @@ def sec_costs(s: dict) -> str:
 
 def sec_provenance(s: dict) -> str:
     p = s.get("provenance") or {}
-    lines = ["| revision kind | value | meaning |", "|---|---|---|"]
-    for run, meta in sorted((p.get("execution_revisions") or {}).items()):
-        lines.append(f"| execution (`{run}`) | `{meta['code_sha']}` | commit in effect when that run "
-                     f"executed, {meta['run_started']} |")
-    lines.append(f"| export | `{p.get('export_revision', s['export_code_sha'])[:7]}` | commit at which "
-                 f"the JSON artifacts were written |")
-    lines.append("| reporting | printed by the report at generation time | commit generating the text |")
+    revs = p.get("execution_revisions") or {}
+    lines = ["| revision kind | value | basis | meaning |", "|---|---|---|---|"]
+    for run, meta in sorted(revs.items()):
+        basis = meta.get("basis", "recorded")
+        nxt = meta.get("next_commit")
+        bracket = (f"run started {meta['run_started']}, after `{meta.get('prev_commit')}` "
+                   f"({meta.get('prev_commit_time')}) and before `{nxt}` "
+                   f"({meta.get('next_commit_time')})") if nxt else f"run started {meta['run_started']}"
+        lines.append(f"| execution (`{run}`) | `{meta['code_sha']}` | **{basis}** | {bracket} |")
+    lines.append(f"| export | `{p.get('export_revision', s['export_code_sha'])[:7]}` | recorded | "
+                 f"commit at which the JSON artifacts were written |")
+    lines.append("| reporting | printed by the report at generation time | recorded | commit "
+                 "generating the text |")
+    if any(m.get("basis") == "inferred" for m in revs.values()):
+        lines += ["", "Execution revisions are **inferred**, not directly recorded: no run wrote its "
+                      "git HEAD into its log, so each is placed on the commit timeline by its run start "
+                      "time. The bracketing commits in the table are that evidence. The inference "
+                      "assumes the checkout was at HEAD with a clean working tree, which no preserved "
+                      "artifact records. Export and reporting revisions are recorded directly."]
     sc = s["scoring"]
     lines.append("")
     lines.append(f"Scoring: `{sc['monitor_model']}`, prompt `{sc['prompt_version']}`, temperature "

@@ -29,14 +29,28 @@ PINNED = {"control-arena": "19.0.0", "inspect-ai": "0.3.266"}
 # not assumed. These differ: the attack campaigns and the honest controls ran at different revisions.
 # The intervening change was additive (honest-arm support in campaign.py); the scoring path, budgets
 # and monitor configuration were identical across both.
+# Execution revisions are INFERRED, not directly recorded. No run wrote its git HEAD into its log, so
+# each run's code revision is inferred by placing the run's start time on the commit timeline: the
+# inferred revision is the last commit authored before the run started, and the following commit is
+# recorded so a reader can check the bracket. This is evidence of which commit was in effect, not proof:
+# it assumes the checkout was at HEAD with no uncommitted changes, which no artifact records.
 EXECUTION_REVISIONS = {
     "p1_dev_o2_v3": {
         "code_sha": "25ac2cb", "run_started": "2026-09-20T15:21:04Z",
-        "note": "attack campaigns; commit in effect at run start",
+        "basis": "inferred", "inferred_from": "run start time against the commit timeline",
+        "prev_commit": "25ac2cb", "prev_commit_time": "2026-09-20T15:20:50Z",
+        "next_commit": "d6ccc8b", "next_commit_time": "2026-09-20T15:26:27Z",
+        "caveat": "run start is only 14s after 25ac2cb; a checkout not at HEAD or a dirty tree "
+                  "would not be visible in any preserved artifact",
+        "note": "attack campaigns; inferred commit in effect at run start",
     },
     "p1_dev_honest_linked": {
         "code_sha": "e5c64da", "run_started": "2026-09-20T17:02:31Z",
-        "note": "honest controls; commit in effect at run start",
+        "basis": "inferred", "inferred_from": "run start time against the commit timeline",
+        "prev_commit": "e5c64da", "prev_commit_time": "2026-09-20T15:47:19Z",
+        "next_commit": "864d6f8", "next_commit_time": "2026-09-20T17:04:21Z",
+        "caveat": "a checkout not at HEAD or a dirty tree would not be visible in any preserved artifact",
+        "note": "honest controls; inferred commit in effect at run start",
     },
 }
 

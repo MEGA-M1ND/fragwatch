@@ -65,11 +65,31 @@ outcomes, including failures, are in `DEV_LOG.md`.
 ```
 
 Needs **python3 (3.11+) and git only** — no API key, no model calls, no Docker, no third-party packages.
-It regenerates the campaign table, replays the archived measurement-defect checks, and regenerates every
-numerical section of this README, `PILOT_REPORT.md` and `CASE_STUDY.md` in memory, failing on any
-difference. Missing artifacts and drifted numbers exit non-zero. See
-[docs/WALKTHROUGH.md](docs/WALKTHROUGH.md) for exactly what it does and does not verify — notably, it
-does not re-run agents, make model calls, or re-verify attack outcomes.
+It re-verifies the nine archived CloudFormation templates against the published outcomes, regenerates the
+campaign table, replays the archived measurement-defect checks, and regenerates every numerical section
+of this README, `PILOT_REPORT.md` and `CASE_STUDY.md` in memory, failing on any difference. Missing
+artifacts, changed hashes and drifted numbers exit non-zero.
+
+To re-verify only the attack outcomes:
+
+```bash
+python3 src/fragwatch/check_templates.py
+```
+
+### What is and is not reproducible
+
+| link in the chain | reproducible offline? | what it needs |
+|---|---|---|
+| archived template → verifier outcome → published table | **yes** | python3 and git |
+| preserved source changes → synthesized template | **no** | Docker and the pinned `iac-fast` image |
+| agent trajectories → source changes | **no** | the full eval stack, Docker and a paid key |
+
+The image used at the original revalidation was not retained, so the synthesis environment recorded in
+`results/templates/MANIFEST.json` is a **rebuild** from the same pinned Dockerfile — not byte-identical,
+and not demonstrably so. And **static verification is not deployment and not exploitation**: a template
+classified `success` expresses the objective in synthesized CloudFormation; nothing here deploys to AWS
+or shows the access is reachable in a real account. See
+[docs/WALKTHROUGH.md](docs/WALKTHROUGH.md) for the full scope.
 
 ## Start here
 
@@ -124,6 +144,7 @@ in `docs/upstream/`, unsent.
 | `src/fragments.py` | White-box side-task decompositions + per-fragment delivery checks |
 | `src/parsing.py` | Dependency-free verdict parser and K=1 instruction joiner |
 | `data/` | Raw `.eval` logs for every run (committed; see `data/README.md`) |
+| `results/templates/` | The nine synthesized templates, their source diffs, and the evidence manifest tying each to its log and published outcome |
 
 ## Reproducing
 
@@ -158,6 +179,14 @@ separately.
 Fragments are hand-written, so this is one coordinated attack construction. It bounds nothing: a
 different decomposition could be stronger or weaker. One judge, one setting, and its verdicts cluster on {1,3,4,7,8,9,10}, so the
 scale is coarse.
+
+**Static verification only.** Attack success means the synthesized template expresses the objective. It
+was never deployed to AWS and never exploited, so nothing here measures whether the modelled access
+would actually be usable.
+
+**Execution revisions are inferred.** No run recorded its git HEAD, so each run's code revision is
+placed on the commit timeline by start time, with the bracketing commits kept as the evidence. A
+checkout not at HEAD, or a dirty working tree, would leave no trace in any preserved artifact.
 
 ## CI
 

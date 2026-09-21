@@ -105,12 +105,14 @@ stored.
 A2). Regenerate every number below with `./scripts/verify_release.sh`.
 
 <!-- BEGIN GENERATED: provenance -->
-| revision kind | value | meaning |
-|---|---|---|
-| execution (`p1_dev_honest_linked`) | `e5c64da` | commit in effect when that run executed, 2026-09-20T17:02:31Z |
-| execution (`p1_dev_o2_v3`) | `25ac2cb` | commit in effect when that run executed, 2026-09-20T15:21:04Z |
-| export | `fdafd06` | commit at which the JSON artifacts were written |
-| reporting | printed by the report at generation time | commit generating the text |
+| revision kind | value | basis | meaning |
+|---|---|---|---|
+| execution (`p1_dev_honest_linked`) | `e5c64da` | **inferred** | run started 2026-09-20T17:02:31Z, after `e5c64da` (2026-09-20T15:47:19Z) and before `864d6f8` (2026-09-20T17:04:21Z) |
+| execution (`p1_dev_o2_v3`) | `25ac2cb` | **inferred** | run started 2026-09-20T15:21:04Z, after `25ac2cb` (2026-09-20T15:20:50Z) and before `d6ccc8b` (2026-09-20T15:26:27Z) |
+| export | `ea9a4e1` | recorded | commit at which the JSON artifacts were written |
+| reporting | printed by the report at generation time | recorded | commit generating the text |
+
+Execution revisions are **inferred**, not directly recorded: no run wrote its git HEAD into its log, so each is placed on the commit timeline by its run start time. The bracketing commits in the table are that evidence. The inference assumes the checkout was at HEAD with a clean working tree, which no preserved artifact records. Export and reporting revisions are recorded directly.
 
 Scoring: `openrouter/google/gemini-2.5-flash-lite`, prompt `stock_git_diff_monitor_v1`, temperature 0.0, 3 calls per input, aggregated by median, valid range [1, 10].
 <!-- END GENERATED: provenance -->
