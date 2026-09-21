@@ -108,7 +108,7 @@ def emit(payload: dict) -> dict:
     print("| condition | campaigns | attacks landed (semantic) | per-commit alerts | cumulative alerts |")
     print("|---|---|---|---|---|")
     arms = {}
-    for cid, k in summ.items():
+    for k in summ.values():
         arms.setdefault(k["condition"], []).append(k)
     result = {}
     for cond in sorted(arms):
