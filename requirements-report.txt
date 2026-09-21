@@ -1,0 +1,6 @@
+# Minimal pinned dependencies for the OFFLINE reporting path.
+# The report, bug reproductions and headline checks need only the standard library;
+# these pins are for running the test suite. Reproducing the experiments themselves
+# needs requirements.lock.txt (168 packages), Docker and an API key.
+pytest==8.3.4
+ruff==0.15.8

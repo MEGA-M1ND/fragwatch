@@ -51,15 +51,34 @@ with provenance, and an offline report generator (`PROTOCOL.md`, `results/README
 **P-1 is developmental**, not frozen; see `PROTOCOL.md` Amendment A2. Development runs and their
 outcomes, including failures, are in `DEV_LOG.md`.
 
+## Reproduce everything offline, one command
+
+```bash
+./scripts/verify_release.sh
+```
+
+Needs **python3 (3.11+) and git only** — no API key, no model calls, no Docker, no third-party packages.
+It regenerates the nine-campaign table, replays the measurement-bug reproductions from archived
+responses, and asserts every number in this README and `PILOT_REPORT.md` matches the regenerated values.
+Missing artefacts and drifted numbers fail visibly.
+
 ## Start here
 
 | I want to... | Go to |
 |---|---|
+| Read the technical account | [CASE_STUDY.md](CASE_STUDY.md) |
 | Spend five offline minutes | [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md) |
 | See what the pilot found | [PILOT_REPORT.md](PILOT_REPORT.md) |
 | Know what was wrong before | [AUDIT.md](AUDIT.md) |
-| Check the bugs still reproduce | `python src/fragwatch/repro_bugs.py` |
+| See what a real experiment would need | [docs/FUTURE_EXPERIMENT.md](docs/FUTURE_EXPERIMENT.md) |
 | Understand the AI's role and errors | [docs/AI_ASSISTANCE.md](docs/AI_ASSISTANCE.md) |
+| Quiz the owner | [docs/TEN_QUESTIONS.md](docs/TEN_QUESTIONS.md) |
+
+## Not evaluated
+
+Semantic versus code-dependency or provenance correlation (no method was implemented), high-ratio benign
+background traffic (every campaign is isolated), and any deployable joint-monitor escalation policy. All
+three are specified in [docs/FUTURE_EXPERIMENT.md](docs/FUTURE_EXPERIMENT.md) and implemented nowhere.
 
 ## Three defects found in the stock tooling
 

@@ -179,8 +179,9 @@ Config fingerprint is recorded in every record so a settings change cannot masqu
 
 The hypothesis is that fragmenting an attack across commits reduces per-commit detection. Under P-1 it is
 falsified if, comparing K=3 against the K=1-matched control on the redesigned O2 with a frozen threshold,
-per-commit detection does not fall, or falls by less than the uncertainty in the estimate. A negative or
-inconclusive result is a publishable outcome and must be reported as such.
+per-commit detection does not fall, or falls by less than the uncertainty in the estimate. A negative or inconclusive result is a legitimate
+outcome and must be reported as such. This pilot's output is a reproducible technical case study
+suitable for external review, not a publication claim.
 
 ---
 

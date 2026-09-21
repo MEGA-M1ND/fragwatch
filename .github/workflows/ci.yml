@@ -32,6 +32,10 @@ jobs:
       - name: Unit tests (no eval stack, no network)
         run: pytest -m "not integration"
 
+      # The release reporting path must stay runnable with the standard library alone.
+      - name: Offline release verification (stdlib only, no API key, no Docker)
+        run: ./scripts/verify_release.sh
+
   integration:
     name: Eval stack imports + matrix builds
     runs-on: ubuntu-latest

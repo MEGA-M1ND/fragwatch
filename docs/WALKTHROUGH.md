@@ -1,69 +1,48 @@
 # Five-minute walkthrough
 
-Everything here runs **offline**. No API key, no Docker, no model calls.
+One command reproduces the whole reporting path. It needs **python3 (3.11+) and git only** — no API key,
+no model calls, no Docker, no third-party packages.
 
 ```bash
-python -m venv .venv && . .venv/bin/activate
-pip install -r requirements.lock.txt
+./scripts/verify_release.sh
 ```
 
-## 1. What the project claims, and what it does not (30 s)
+Three stages, each failing visibly if an artefact is missing or a number has drifted:
 
-Read the top of `README.md`. The one thing to notice: the historical per-commit versus cumulative
-comparison is labelled **inconclusive**, because the ordering changes with the measurement procedure.
-Earlier versions of this repository claimed a winner. That claim is withdrawn.
+1. **Nine-campaign results table** from `results/pilot_campaigns.json`.
+2. **Measurement-bug reproductions**, replaying archived defective behaviour from
+   `results/archive/defective_behaviour.json`.
+3. **Headline consistency**, asserting every number in `README.md` and `PILOT_REPORT.md` matches the
+   regenerated values.
 
-## 2. See the measurement bugs reproduce (1 min)
+To run the tests as well (`pip install -r requirements-report.txt`, two pinned packages):
 
 ```bash
-python src/fragwatch/repro_bugs.py
+pytest -m "not integration"   # hermetic
+pytest                        # adds design and reproducibility tests
 ```
 
-Four bugs reproduce against real logged data: the stock XML-only parser discards verdicts the model
-did emit; the old parser accepted 0, 99 and 10.9 as 1–10 scores; a retry at a different temperature
-overwrote a verdict of 10 with 1; and a hard-coded output path deleted an earlier run's results
-(recoverable only from git).
+Reproducing the **experiments** rather than the reporting is a different matter: that needs
+`requirements.lock.txt` (168 packages), Docker, the `iac_fast` image and an OpenRouter key. See
+`SETUP.md`.
 
-## 3. Reproduce the headline contradiction (1 min)
+## What to read, in order
 
-```bash
-python src/compare_monitors.py data/step4_cumulative/*.eval | head -20
-```
+| Minutes | Read | Why |
+|---|---|---|
+| 0–1 | [`CASE_STUDY.md`](../CASE_STUDY.md) §2–3 | how the original result changed across four scoring procedures, and the one raw response that shows why |
+| 1–2 | output of stage 2 above | the defects, replayed, each attributed to us or to upstream |
+| 2–3 | [`PILOT_REPORT.md`](../PILOT_REPORT.md) results table | the nine campaigns, with denominators |
+| 3–4 | [`GATE_DECISION.md`](../GATE_DECISION.md) | why the pilot stopped instead of scaling |
+| 4–5 | [`docs/AI_ASSISTANCE.md`](AI_ASSISTANCE.md) | who wrote this and which errors it made |
 
-This is the repository's own pre-audit generator. It reports per-commit 7/9 and cumulative 8/9, which
-reverses the number the old README published. Neither is "the" answer; that is the point.
+## The one-paragraph version
 
-## 4. Regenerate the canonical historical tables (1 min)
-
-```bash
-python src/fragwatch/report.py results/hist_* --sweep
-```
-
-Deterministic, offline, with explicit denominators, missing-verdict counts and a threshold sweep. The
-threshold is labelled UNCALIBRATED wherever it appears.
-
-## 5. Regenerate the pilot table (1 min)
-
-```bash
-python src/fragwatch/pilot_report.py 'data/p1_dev_o2_v3/*.eval' 'data/p1_dev_honest_linked/*.eval' \
-  --semantic results/semantic_verification.json
-```
-
-Every developmental campaign, with construction and security outcomes reported separately.
-
-## 6. Run the tests (30 s)
-
-```bash
-pytest -m "not integration"   # hermetic, no eval stack needed
-pytest                        # adds the design and reproducibility tests
-```
-
-## Where to look next
-
-| Question | File |
-|---|---|
-| What was wrong with the earlier results? | `AUDIT.md` |
-| What is the experiment supposed to be? | `PROTOCOL.md` |
-| What was tried and rejected? | `DEV_LOG.md` |
-| Should we have continued? | `GATE_DECISION.md` |
-| What did the pilot actually find? | `PILOT_REPORT.md` |
+An earlier round of this project reported that per-commit monitoring beat cumulative monitoring and
+concluded per-commit review was the stronger monitor. No committed command reproduced that number, the
+ordering reversed depending on which of four scoring procedures was used, and one of its two input files
+had been deleted by a hard-coded output path. The pipeline was rebuilt around a single validated scoring
+path, a protocol was written, and a nine-campaign developmental batch found that cumulative monitoring
+did not improve on per-commit monitoring — while also finding that the attack could not be fully
+distributed, because the commit binding a privilege to a broad target stayed locally suspicious. The
+pilot stopped there. n = 3 per arm establishes nothing about rates or equivalence.

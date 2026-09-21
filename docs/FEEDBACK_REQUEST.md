@@ -33,7 +33,10 @@ Everything is at `github.com/MEGA-M1ND/fragwatch`, branch `claude/audit-repair-p
   it wrong (including declaring a freeze prematurely).
 - `PILOT_REPORT.md` — the developmental results table.
 - `GATE_DECISION.md` — why I stopped.
-- `docs/WALKTHROUGH.md` — five offline minutes, no API key needed.
+- `CASE_STUDY.md` — the technical account, with every number linked to its data and command.
+- `docs/WALKTHROUGH.md` — five offline minutes; `./scripts/verify_release.sh` regenerates the table,
+  replays the measurement bugs and checks the headlines, needing only python3 and git.
+- `docs/FUTURE_EXPERIMENT.md` — the interleaved-stream design I have specified but not built.
 
 Three questions I would most like answered:
 
@@ -59,7 +62,9 @@ Three questions I would most like answered:
    with genuinely multi-file objectives, or treat the measurement tooling as the contribution and drop
    the fragmentation question?
 
-A caveat on provenance: this work was produced in one session with an AI coding agent, and
+Two caveats. Semantic versus dependency correlation, benign background traffic at a realistic ratio,
+and any deployable joint-monitor escalation policy are **entirely unevaluated** — the pilot stopped
+before them. And on provenance: this work was produced in one session with an AI coding agent, and
 `docs/AI_ASSISTANCE.md` lists both what it built and the errors it made. Several of the corrections
 above came from external review rather than from the work noticing its own problems, so I would treat
 my self-assessment with appropriate suspicion.
