@@ -128,8 +128,22 @@ def export_defect_archive(hist_globs: list[str], out: Path, max_examples: int = 
                     "attempt_formats": [a["fmt"] for a in r["attempts"]],
                     "responses": [a.get("raw_response") for a in r["attempts"]],
                 })
+    import subprocess
+
+    def _gitlog(flt: str) -> str:
+        return subprocess.run(
+            ["git", "log", "--oneline", f"--diff-filter={flt}", "--",
+             "data/step4_cumulative/robust_scores.json"],
+            capture_output=True, text=True).stdout.strip()
+
     payload = {
         "schema": "fragwatch.defect_archive/1",
+        "destroyed_results_file": {
+            "path": "data/step4_cumulative/robust_scores.json",
+            "added_by": _gitlog("A"),
+            "deleted_by": _gitlog("D"),
+            "recover_with": "git show dff0f37:data/step4_cumulative/robust_scores.json",
+        },
         "note": (
             "Archived evidence of defective historical behaviour. The production code no longer "
             "contains these defects; the reproductions replay these archived responses so the bugs "

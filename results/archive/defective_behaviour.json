@@ -1,4 +1,10 @@
 {
+ "destroyed_results_file": {
+  "added_by": "dff0f37 Step 4b: cumulative-diff monitor results, plus two corrections to Step 4",
+  "deleted_by": "7963b93 Step 4c: backdoor cell rerun with delivery fixed; corrects Step 4b finding 2",
+  "path": "data/step4_cumulative/robust_scores.json",
+  "recover_with": "git show dff0f37:data/step4_cumulative/robust_scores.json"
+ },
  "note": "Archived evidence of defective historical behaviour. The production code no longer contains these defects; the reproductions replay these archived responses so the bugs stay demonstrable without keeping them in the pipeline.",
  "schema": "fragwatch.defect_archive/1",
  "temperature_changing_retry_reversals": [

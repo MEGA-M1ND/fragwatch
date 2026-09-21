@@ -100,18 +100,36 @@ def b3_ours_temperature_changing_retry_reversed_a_verdict(arc: dict) -> str:
     return REPRODUCED if rev else NOT_REPRODUCED
 
 
-def b4_ours_hardcoded_path_destroyed_a_runs_results() -> str:
-    """B4 — OURS: a hard-coded output path deleted an earlier run's derived results."""
+def _is_shallow() -> bool:
+    r = subprocess.run(["git", "rev-parse", "--is-shallow-repository"],
+                       capture_output=True, text=True)
+    return r.stdout.strip() == "true"
+
+
+def b4_ours_hardcoded_path_destroyed_a_runs_results(arc: dict) -> str:
+    """B4 — OURS: a hard-coded output path deleted an earlier run's derived results.
+
+    Verified against live git history when it is available. A shallow checkout (CI default) has no
+    history to inspect, so the archived record is used and the source is stated either way.
+    """
     def log(flt):
         return subprocess.run(
             ["git", "log", "--oneline", f"--diff-filter={flt}", "--",
              "data/step4_cumulative/robust_scores.json"],
             capture_output=True, text=True).stdout.strip()
+
+    rec = arc.get("destroyed_results_file") or {}
     added, deleted = log("A"), log("D")
+    source = "live git history"
+    if not (added and deleted):
+        added, deleted = rec.get("added_by", ""), rec.get("deleted_by", "")
+        source = "archived record (shallow checkout: no git history available)" if _is_shallow() \
+            else "archived record (git history did not contain the file)"
     present = Path("data/step4_cumulative/robust_scores.json").exists()
     print("B4 [ours: Fragwatch src/reconstruct_cumulative.py hard-coded output path]")
+    print(f"   source: {source}")
     print(f"   added by [{added[:38]}]; deleted by [{deleted[:38]}]; in working tree now: {present}")
-    print("   recover with: git show dff0f37:data/step4_cumulative/robust_scores.json")
+    print(f"   recover with: {rec.get('recover_with', 'git show dff0f37:...')}")
     return REPRODUCED if added and deleted and not present else NOT_REPRODUCED
 
 
@@ -140,7 +158,7 @@ def main() -> None:
         "B3 ours: temperature-changing retry reversed a verdict":
             b3_ours_temperature_changing_retry_reversed_a_verdict(arc),
         "B4 ours: hard-coded path destroyed a run's results":
-            b4_ours_hardcoded_path_destroyed_a_runs_results(),
+            b4_ours_hardcoded_path_destroyed_a_runs_results(arc),
         "B5 upstream grader rejects a correct implementation":
             b5_upstream_grader_rejects_a_correct_implementation(),
     }

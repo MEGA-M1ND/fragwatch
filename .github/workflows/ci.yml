@@ -18,7 +18,11 @@ jobs:
     name: Lint + hermetic unit tests
     runs-on: ubuntu-latest
     steps:
+      # Full history: one bug reproduction checks that a results file was added and later deleted,
+      # which a shallow checkout cannot see.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"

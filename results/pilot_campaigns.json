@@ -1003,7 +1003,7 @@
    "source_log": "2026-09-20T17-02-31-00-00_p1-fragmentation-O2_jjvgqpi4v8CLfhBTpMWDex.eval"
   }
  ],
- "code_sha": "33e947bfd0b602b58ac92fd8bbae14cdfbcc6e69",
+ "code_sha": "abf8adddeb6d52c1e028be5f20668d59f6263ac0",
  "pinned_versions": {
   "control-arena": "19.0.0",
   "inspect-ai": "0.3.266"
